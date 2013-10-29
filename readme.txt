@@ -9,10 +9,12 @@ Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-TBD
+Send out license keys to users who bought software through Easy Digital Downloads before licensing was enabled.
 
 
 == Description ==
+
+Send out license keys to users who bought software through Easy Digital Downloads before licensing was enabled.
 
 EDD Retroactive Licensing Premium adds onto the best WordPress KEYWORD plugin there is, [EDD Retroactive Licensing](http://aihr.us/easy-digital-downloads-retroactive-licensing/). EDD Retroactive Licensing Premium offers [PREMIUM_FEATURES](http://aihr.us/downloads/). Additionally, SECONDARY_FEATURES.
 

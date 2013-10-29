@@ -2,7 +2,8 @@
 /**
  * Plugin Name: EDD Retroactive Licensing
  * Plugin URI: http://aihr.us/easy-digital-downloads-retroactive-licensing/
- * Description: TBD
+ * Description: Send out license keys to users who bought software through Easy 
+ * Digital Downloads before licensing was enabled.
  * Version: 0.0.1
  * Author: Michael Cannon
  * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
