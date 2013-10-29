@@ -17,14 +17,14 @@
  */
 
 /**
- * WordPress Starter settings class
+ * EDD Retroactive Licensing settings class
  *
  * Based upon http://alisothegeek.com/2011/01/wordpress-settings-api-tutorial-1/
  */
 
 
-class WordPress_Starter_Settings {
-	const ID = 'wordpress-starter-settings';
+class EDD_Retroactive_Licensing_Settings {
+	const ID = 'edd-retroactive-licensing-settings';
 
 	public static $admin_page = '';
 	public static $default    = array(
@@ -54,7 +54,7 @@ class WordPress_Starter_Settings {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		// add_action( 'init', array( $this, 'init' ) );
-		load_plugin_textdomain( 'wordpress-starter', false, '/wordpress-starter/languages/' );
+		load_plugin_textdomain( 'edd-retroactive-licensing', false, '/edd-retroactive-licensing/languages/' );
 	}
 
 
@@ -62,9 +62,9 @@ class WordPress_Starter_Settings {
 
 
 	public function admin_init() {
-		$version       = wps_get_option( 'version' );
-		self::$version = WordPress_Starter::VERSION;
-		self::$version = apply_filters( 'wps_version', self::$version );
+		$version       = eddrl_get_option( 'version' );
+		self::$version = EDD_Retroactive_Licensing::VERSION;
+		self::$version = apply_filters( 'eddrl_version', self::$version );
 
 		if ( $version != self::$version )
 			$this->initialize_settings();
@@ -80,7 +80,7 @@ class WordPress_Starter_Settings {
 
 
 	public function admin_menu() {
-		self::$admin_page = add_options_page( esc_html__( 'WordPress Starter Settings', 'wordpress-starter' ), esc_html__( 'WordPress Starter', 'wordpress-starter' ), 'manage_options', self::ID, array( 'WordPress_Starter_Settings', 'display_page' ) );
+		self::$admin_page = add_options_page( esc_html__( 'EDD Retroactive Licensing Settings', 'edd-retroactive-licensing' ), esc_html__( 'EDD Retroactive Licensing', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( 'EDD_Retroactive_Licensing_Settings', 'display_page' ) );
 
 		add_action( 'admin_print_scripts-' . self::$admin_page, array( $this, 'scripts' ) );
 		add_action( 'admin_print_styles-' . self::$admin_page, array( $this, 'styles' ) );
@@ -88,8 +88,8 @@ class WordPress_Starter_Settings {
 
 		add_screen_meta_link(
 			'wsp_importer_link',
-			esc_html__( 'WordPress Starter Processer', 'wordpress-starter' ),
-			admin_url( 'tools.php?page=' . WordPress_Starter::ID ),
+			esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ),
+			admin_url( 'tools.php?page=' . EDD_Retroactive_Licensing::ID ),
 			self::$admin_page,
 			array( 'style' => 'font-weight: bold;' )
 		);
@@ -116,12 +116,12 @@ class WordPress_Starter_Settings {
 
 
 	public static function sections() {
-		self::$sections['general'] = esc_html__( 'General', 'wordpress-starter' );
-		self::$sections['testing'] = esc_html__( 'Testing', 'wordpress-starter' );
-		self::$sections['reset']   = esc_html__( 'Compatibility & Reset', 'wordpress-starter' );
-		self::$sections['about']   = esc_html__( 'About WordPress Starter', 'wordpress-starter' );
+		self::$sections['general'] = esc_html__( 'General', 'edd-retroactive-licensing' );
+		self::$sections['testing'] = esc_html__( 'Testing', 'edd-retroactive-licensing' );
+		self::$sections['reset']   = esc_html__( 'Compatibility & Reset', 'edd-retroactive-licensing' );
+		self::$sections['about']   = esc_html__( 'About EDD Retroactive Licensing', 'edd-retroactive-licensing' );
 
-		self::$sections = apply_filters( 'wps_sections', self::$sections );
+		self::$sections = apply_filters( 'eddrl_sections', self::$sections );
 	}
 
 
@@ -133,26 +133,26 @@ class WordPress_Starter_Settings {
 	public static function settings() {
 		// General
 		self::$settings['paging'] = array(
-			'title' => esc_html__( 'Enable Paging?', 'wordpress-starter' ),
-			'desc' => esc_html__( 'For `[wps_widget_list]`', 'wordpress-starter' ),
+			'title' => esc_html__( 'Enable Paging?', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( 'For `[eddrl_widget_list]`', 'edd-retroactive-licensing' ),
 			'type' => 'select',
 			'choices' => array(
-				'' => esc_html__( 'Disable', 'wordpress-starter' ),
-				1 => esc_html__( 'Enable', 'wordpress-starter' ),
-				'before' => esc_html__( 'Before wps', 'wordpress-starter' ),
-				'after' => esc_html__( 'After wps', 'wordpress-starter' ),
+				'' => esc_html__( 'Disable', 'edd-retroactive-licensing' ),
+				1 => esc_html__( 'Enable', 'edd-retroactive-licensing' ),
+				'before' => esc_html__( 'Before wps', 'edd-retroactive-licensing' ),
+				'after' => esc_html__( 'After wps', 'edd-retroactive-licensing' ),
 			),
 			'std' => 1,
 			'widget' => 0,
 		);
 
 		// Post Type
-		$desc        = __( 'URL slug-name for <a href="%1s">wps archive</a> page.', 'wordpress-starter' );
-		$has_archive = wps_get_option( 'has_archive', '' );
+		$desc        = __( 'URL slug-name for <a href="%1s">wps archive</a> page.', 'edd-retroactive-licensing' );
+		$has_archive = eddrl_get_option( 'has_archive', '' );
 		$site_url    = site_url( '/' . $has_archive );
 
 		self::$settings['has_archive'] = array(
-			'title' => esc_html__( 'Archive Page URL', 'wordpress-starter' ),
+			'title' => esc_html__( 'Archive Page URL', 'edd-retroactive-licensing' ),
 			'desc' => sprintf( $desc, $site_url ),
 			'std' => 'wps-archive',
 			'validate' => 'sanitize_title',
@@ -162,15 +162,15 @@ class WordPress_Starter_Settings {
 		// Testing
 		self::$settings['debug_mode'] = array(
 			'section' => 'testing',
-			'title' => esc_html__( 'Debug Mode?', 'wordpress-starter' ),
-			'desc' => esc_html__( 'Bypass Ajax controller to handle posts_to_import directly for testing purposes.', 'wordpress-starter' ),
+			'title' => esc_html__( 'Debug Mode?', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( 'Bypass Ajax controller to handle posts_to_import directly for testing purposes.', 'edd-retroactive-licensing' ),
 			'type' => 'checkbox',
 			'std' => 0,
 		);
 
 		self::$settings['posts_to_import'] = array(
-			'title' => esc_html__( 'Posts to Import', 'wordpress-starter' ),
-			'desc' => esc_html__( "A CSV list of post ids to import, like '1,2,3'.", 'wordpress-starter' ),
+			'title' => esc_html__( 'Posts to Import', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( "A CSV list of post ids to import, like '1,2,3'.", 'edd-retroactive-licensing' ),
 			'std' => '',
 			'type' => 'text',
 			'section' => 'testing',
@@ -178,8 +178,8 @@ class WordPress_Starter_Settings {
 		);
 
 		self::$settings['skip_importing_post_ids'] = array(
-			'title' => esc_html__( 'Skip Importing Posts', 'wordpress-starter' ),
-			'desc' => esc_html__( "A CSV list of post ids to not import, like '1,2,3'.", 'wordpress-starter' ),
+			'title' => esc_html__( 'Skip Importing Posts', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( "A CSV list of post ids to not import, like '1,2,3'.", 'edd-retroactive-licensing' ),
 			'std' => '',
 			'type' => 'text',
 			'section' => 'testing',
@@ -187,8 +187,8 @@ class WordPress_Starter_Settings {
 		);
 
 		self::$settings['limit'] = array(
-			'title' => esc_html__( 'Import Limit', 'wordpress-starter' ),
-			'desc' => esc_html__( 'Useful for testing import on a limited amount of posts. 0 or blank means unlimited.', 'wordpress-starter' ),
+			'title' => esc_html__( 'Import Limit', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( 'Useful for testing import on a limited amount of posts. 0 or blank means unlimited.', 'edd-retroactive-licensing' ),
 			'std' => '',
 			'type' => 'text',
 			'section' => 'testing',
@@ -203,9 +203,9 @@ class WordPress_Starter_Settings {
 
 			self::$settings['export'] = array(
 				'section' => 'reset',
-				'title' => esc_html__( 'Export Settings', 'wordpress-starter' ),
+				'title' => esc_html__( 'Export Settings', 'edd-retroactive-licensing' ),
 				'type' => 'readonly',
-				'desc' => esc_html__( 'These are your current settings in a serialized format. Copy the contents to make a backup of your settings.', 'wordpress-starter' ),
+				'desc' => esc_html__( 'These are your current settings in a serialized format. Copy the contents to make a backup of your settings.', 'edd-retroactive-licensing' ),
 				'std' => $serialized_options,
 				'widget' => 0,
 			);
@@ -213,31 +213,31 @@ class WordPress_Starter_Settings {
 
 		self::$settings['import'] = array(
 			'section' => 'reset',
-			'title' => esc_html__( 'Import Settings', 'wordpress-starter' ),
+			'title' => esc_html__( 'Import Settings', 'edd-retroactive-licensing' ),
 			'type' => 'textarea',
-			'desc' => esc_html__( 'Paste new serialized settings here to overwrite your current configuration.', 'wordpress-starter' ),
+			'desc' => esc_html__( 'Paste new serialized settings here to overwrite your current configuration.', 'edd-retroactive-licensing' ),
 			'widget' => 0,
 		);
 
 		self::$settings['delete_data'] = array(
 			'section' => 'reset',
-			'title' => esc_html__( 'Remove Plugin Data on Deletion?', 'wordpress-starter' ),
+			'title' => esc_html__( 'Remove Plugin Data on Deletion?', 'edd-retroactive-licensing' ),
 			'type' => 'checkbox',
 			'class' => 'warning', // Custom class for CSS
-			'desc' => esc_html__( 'Delete all WordPress Starter data and options from database on plugin deletion', 'wordpress-starter' ),
+			'desc' => esc_html__( 'Delete all EDD Retroactive Licensing data and options from database on plugin deletion', 'edd-retroactive-licensing' ),
 			'widget' => 0,
 		);
 
 		self::$settings['reset_defaults'] = array(
 			'section' => 'reset',
-			'title' => esc_html__( 'Reset to Defaults?', 'wordpress-starter' ),
+			'title' => esc_html__( 'Reset to Defaults?', 'edd-retroactive-licensing' ),
 			'type' => 'checkbox',
 			'class' => 'warning', // Custom class for CSS
-			'desc' => esc_html__( 'Check this box to reset options to their defaults', 'wordpress-starter' ),
+			'desc' => esc_html__( 'Check this box to reset options to their defaults', 'edd-retroactive-licensing' ),
 			'widget' => 0,
 		);
 
-		self::$settings = apply_filters( 'wps_settings', self::$settings );
+		self::$settings = apply_filters( 'eddrl_settings', self::$settings );
 
 		foreach ( self::$settings as $id => $parts ) {
 			self::$settings[ $id ] = wp_parse_args( $parts, self::$default );
@@ -251,7 +251,7 @@ class WordPress_Starter_Settings {
 
 		$do_backwards = false;
 		if ( 'backwards' == $mode ) {
-			$old_version = wps_get_option( 'version' );
+			$old_version = eddrl_get_option( 'version' );
 			if ( ! empty( $old_version ) )
 				$do_backwards = true;
 		}
@@ -311,7 +311,7 @@ class WordPress_Starter_Settings {
 	public static function display_page() {
 		echo '<div class="wrap">
 			<div class="icon32" id="icon-options-general"></div>
-			<h2>' . esc_html__( 'WordPress Starter Settings', 'wordpress-starter' ) . '</h2>';
+			<h2>' . esc_html__( 'EDD Retroactive Licensing Settings', 'edd-retroactive-licensing' ) . '</h2>';
 
 		echo '<form action="options.php" method="post">';
 
@@ -328,27 +328,27 @@ class WordPress_Starter_Settings {
 		self::do_settings_sections( self::ID );
 
 		echo '
-			<p class="submit"><input name="Submit" type="submit" class="button-primary" value="' . esc_html__( 'Save Changes', 'wordpress-starter' ) . '" /></p>
+			<p class="submit"><input name="Submit" type="submit" class="button-primary" value="' . esc_html__( 'Save Changes', 'edd-retroactive-licensing' ) . '" /></p>
 			</form>
 		</div>
 		';
 
-		$disable_donate = wps_get_option( 'disable_donate' );
+		$disable_donate = eddrl_get_option( 'disable_donate' );
 		if ( ! $disable_donate ) {
 			echo '<p>' .
 				sprintf(
-				__( 'If you like this plugin, please <a href="%1$s" title="Donate for Good Karma"><img src="%2$s" border="0" alt="Donate for Good Karma" /></a> or <a href="%3$s" title="purchase WordPress Starter Premium">purchase WordPress Starter Premium</a> to help fund further development and <a href="%4$s" title="Support forums">support</a>.', 'wordpress-starter' ),
+				__( 'If you like this plugin, please <a href="%1$s" title="Donate for Good Karma"><img src="%2$s" border="0" alt="Donate for Good Karma" /></a> or <a href="%3$s" title="purchase EDD Retroactive Licensing Premium">purchase EDD Retroactive Licensing Premium</a> to help fund further development and <a href="%4$s" title="Support forums">support</a>.', 'edd-retroactive-licensing' ),
 				esc_url( 'http://aihr.us/about-aihrus/donate/' ),
 				esc_url( 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif' ),
 				esc_url( 'http://aihr.us/downloads/' ),
-				esc_url( 'https://aihrus.zendesk.com/categories/20102742-WordPress-Starter-Plugin' )
+				esc_url( 'https://aihrus.zendesk.com/categories/20133716-Easy-Digital-Downloads-Retroactive-Licensing' )
 			) .
 				'</p>';
 		}
 
 		echo '<p class="copyright">' .
 			sprintf(
-			__( 'Copyright &copy;%1$s <a href="%2$s">Aihrus</a>.', 'wordpress-starter' ),
+			__( 'Copyright &copy;%1$s <a href="%2$s">Aihrus</a>.', 'edd-retroactive-licensing' ),
 			date( 'Y' ),
 			esc_url( 'http://aihr.us' )
 		) .
@@ -404,7 +404,7 @@ class WordPress_Starter_Settings {
 	public function display_about_section() {
 		echo '
 			<div id="about" style="width: 70%; min-height: 225px;">
-				<p><img class="alignright size-medium" title="Michael in Red Square, Moscow, Russia" src="' . WP_PLUGIN_URL . '/wordpress-starter/media/michael-cannon-red-square-300x2251.jpg" alt="Michael in Red Square, Moscow, Russia" width="300" height="225" /><a href="http://wordpress.org/extend/plugins/wordpress-starter/">WordPress Starter</a> is by <a href="http://aihr.us/about-aihrus/michael-cannon-resume/">Michael Cannon</a>. He\'s <a title="Lot\'s of stuff about Peichi Liu…" href="http://peimic.com/t/peichi-liu/">Peichi’s</a> smiling man, an adventurous <a title="Water rat" href="http://www.chinesehoroscope.org/chinese_zodiac/rat/" target="_blank">water-rat</a>, <a title="Axelerant – Open Source. Engineered." href="http://axelerant.com/who-we-are">chief people officer</a>, <a title="Road biker, cyclist, biking; whatever you call, I love to ride" href="http://peimic.com/c/biking/">cyclist</a>, <a title="Aihrus – website support made easy since 1999" href="http://aihr.us/about-aihrus/">full stack developer</a>, <a title="Michael\'s poetic like literary ramblings" href="http://peimic.com/t/poetry/">poet</a>, <a title="World Wide Opportunities on Organic Farms" href="http://peimic.com/t/WWOOF/">WWOOF’er</a> and <a title="My traveled to country list, is more than my age." href="http://peimic.com/c/travel/">world traveler</a>.</p>
+				<p><img class="alignright size-medium" title="Michael in Red Square, Moscow, Russia" src="' . WP_PLUGIN_URL . '/edd-retroactive-licensing/media/michael-cannon-red-square-300x2251.jpg" alt="Michael in Red Square, Moscow, Russia" width="300" height="225" /><a href="http://aihr.us/easy-digital-downloads-retroactive-licensing/">EDD Retroactive Licensing</a> is by <a href="http://aihr.us/about-aihrus/michael-cannon-resume/">Michael Cannon</a>. He\'s <a title="Lot\'s of stuff about Peichi Liu…" href="http://peimic.com/t/peichi-liu/">Peichi’s</a> smiling man, an adventurous <a title="Water rat" href="http://www.chinesehoroscope.org/chinese_zodiac/rat/" target="_blank">water-rat</a>, <a title="Axelerant – Open Source. Engineered." href="http://axelerant.com/who-we-are">chief people officer</a>, <a title="Road biker, cyclist, biking; whatever you call, I love to ride" href="http://peimic.com/c/biking/">cyclist</a>, <a title="Aihrus – website support made easy since 1999" href="http://aihr.us/about-aihrus/">full stack developer</a>, <a title="Michael\'s poetic like literary ramblings" href="http://peimic.com/t/poetry/">poet</a>, <a title="World Wide Opportunities on Organic Farms" href="http://peimic.com/t/WWOOF/">WWOOF’er</a> and <a title="My traveled to country list, is more than my age." href="http://peimic.com/c/travel/">world traveler</a>.</p>
 			</div>
 		';
 	}
@@ -542,7 +542,7 @@ class WordPress_Starter_Settings {
 		$defaults                 = self::get_defaults( 'backwards' );
 		$current                  = get_option( self::ID );
 		$current                  = wp_parse_args( $current, $defaults );
-		$current['admin_notices'] = wps_get_option( 'version', self::$version );
+		$current['admin_notices'] = eddrl_get_option( 'version', self::$version );
 		$current['version']       = self::$version;
 
 		update_option( self::ID, $current );
@@ -649,8 +649,8 @@ class WordPress_Starter_Settings {
 		}
 
 		$input['version']        = self::$version;
-		$input['donate_version'] = WordPress_Starter::VERSION;
-		$input                   = apply_filters( 'wps_validate_settings', $input, $errors );
+		$input['donate_version'] = EDD_Retroactive_Licensing::VERSION;
+		$input                   = apply_filters( 'eddrl_validate_settings', $input, $errors );
 
 		unset( $input['export'] );
 		unset( $input['import'] );
@@ -700,7 +700,7 @@ class WordPress_Starter_Settings {
 
 		case 'required':
 			if ( empty( $input[ $id ] ) )
-				$errors[ $id ] = esc_html__( 'Required', 'wordpress-starter' );
+				$errors[ $id ] = esc_html__( 'Required', 'edd-retroactive-licensing' );
 			break;
 
 		case 'slug':
@@ -797,12 +797,12 @@ class WordPress_Starter_Settings {
 			return;
 
 		$screen->set_help_sidebar(
-			'<p><strong>' . esc_html__( 'For more information:', 'wordpress-starter' ) . '</strong></p><p>' .
-			esc_html__( 'These WordPress Starter Settings establish the default option values for shortcodes, theme functions, and widget instances.', 'wordpress-starter' ) .
+			'<p><strong>' . esc_html__( 'For more information:', 'edd-retroactive-licensing' ) . '</strong></p><p>' .
+			esc_html__( 'These EDD Retroactive Licensing Settings establish the default option values for shortcodes, theme functions, and widget instances.', 'edd-retroactive-licensing' ) .
 			'</p><p>' .
 			sprintf(
-				__( 'View the <a href="%s">WordPress Starter documentation</a>.', 'wordpress-starter' ),
-				esc_url( 'http://wordpress.org/extend/plugins/wordpress-starter/' )
+				__( 'View the <a href="%s">EDD Retroactive Licensing documentation</a>.', 'edd-retroactive-licensing' ),
+				esc_url( 'http://aihr.us/easy-digital-downloads-retroactive-licensing/' )
 			) .
 			'</p>'
 		);
@@ -810,32 +810,32 @@ class WordPress_Starter_Settings {
 		$screen->add_help_tab(
 			array(
 				'id'     => 'tw-general',
-				'title'     => esc_html__( 'General', 'wordpress-starter' ),
-				'content' => '<p>' . esc_html__( 'Show or hide optional fields.', 'wordpress-starter' ) . '</p>'
+				'title'     => esc_html__( 'General', 'edd-retroactive-licensing' ),
+				'content' => '<p>' . esc_html__( 'Show or hide optional fields.', 'edd-retroactive-licensing' ) . '</p>'
 			)
 		);
 
-		do_action( 'wps_settings_add_help_tabs', $screen );
+		do_action( 'eddrl_settings_add_help_tabs', $screen );
 	}
 
 
 }
 
 
-function wps_get_options() {
-	$options = get_option( WordPress_Starter_Settings::ID );
+function eddrl_get_options() {
+	$options = get_option( EDD_Retroactive_Licensing_Settings::ID );
 
 	if ( false === $options ) {
-		$options = WordPress_Starter_Settings::get_defaults();
-		update_option( WordPress_Starter_Settings::ID, $options );
+		$options = EDD_Retroactive_Licensing_Settings::get_defaults();
+		update_option( EDD_Retroactive_Licensing_Settings::ID, $options );
 	}
 
 	return $options;
 }
 
 
-function wps_get_option( $option, $default = null ) {
-	$options = get_option( WordPress_Starter_Settings::ID, null );
+function eddrl_get_option( $option, $default = null ) {
+	$options = get_option( EDD_Retroactive_Licensing_Settings::ID, null );
 
 	if ( isset( $options[$option] ) )
 		return $options[$option];
@@ -844,14 +844,14 @@ function wps_get_option( $option, $default = null ) {
 }
 
 
-function wps_set_option( $option, $value = null ) {
-	$options = get_option( WordPress_Starter_Settings::ID );
+function eddrl_set_option( $option, $value = null ) {
+	$options = get_option( EDD_Retroactive_Licensing_Settings::ID );
 
 	if ( ! is_array( $options ) )
 		$options = array();
 
 	$options[$option] = $value;
-	update_option( WordPress_Starter_Settings::ID, $options );
+	update_option( EDD_Retroactive_Licensing_Settings::ID, $options );
 }
 
 

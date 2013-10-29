@@ -1,12 +1,12 @@
 #!/bin/bash
 
-NEW_ABBR="cbqe_"
-NEW_CLASS="Custom_Bulk_Quick_Edit"
+NEW_ABBR="eddrl_"
+NEW_CLASS="EDD_Retroactive_Licensing"
 NEW_FILTER="${NEW_ABBR}"
-NEW_KB_PATH="20112546-Custom-Bulk-Quick-Edit"
-NEW_SITE=""
-NEW_SLUG="custom-bulk-quick-edit"
-NEW_TITLE="Custom Bulk/Quick Edit"
+NEW_KB_PATH="20133716-Easy-Digital-Downloads-Retroactive-Licensing"
+NEW_SITE="http://aihr.us/easy-digital-downloads-retroactive-licensing/"
+NEW_SLUG="edd-retroactive-licensing"
+NEW_TITLE="EDD Retroactive Licensing"
 
 OLD_ABBR="wps_"
 OLD_CLASS="WordPress_Starter"
@@ -67,6 +67,8 @@ mv ${OLD_SLUG}.css ${NEW_SLUG}.css
 mv ${OLD_SLUG}.php ${NEW_SLUG}.php
 mv languages/${OLD_SLUG}.pot languages/${NEW_SLUG}.pot
 mv lib/class-${OLD_SLUG}-settings.php lib/class-${NEW_SLUG}-settings.php
+
+exit
 
 if [[ -e .git ]]
 then

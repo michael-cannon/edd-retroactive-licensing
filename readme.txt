@@ -1,4 +1,4 @@
-=== WordPress Starter ===
+=== EDD Retroactive Licensing ===
 
 Contributors: comprock
 Donate link: http://aihr.us/about-aihrus/donate/
@@ -14,12 +14,12 @@ TBD
 
 == Description ==
 
-WordPress Starter Premium adds onto the best WordPress KEYWORD plugin there is, [WordPress Starter](http://wordpress.org/extend/plugins/wordpress-starter/). WordPress Starter Premium offers [PREMIUM_FEATURES](http://aihr.us/downloads/). Additionally, SECONDARY_FEATURES.
+EDD Retroactive Licensing Premium adds onto the best WordPress KEYWORD plugin there is, [EDD Retroactive Licensing](http://aihr.us/easy-digital-downloads-retroactive-licensing/). EDD Retroactive Licensing Premium offers [PREMIUM_FEATURES](http://aihr.us/downloads/). Additionally, SECONDARY_FEATURES.
 
 [youtube http://www.youtube.com/watch?v=TBD]
 **[Video introduction](http://youtu.be/TBD)**
 
-The WordPress KEYWORD plugin, WordPress Starter, FREE_DESCRIPTION.
+The WordPress KEYWORD plugin, EDD Retroactive Licensing, FREE_DESCRIPTION.
 
 = Primary Features =
 
@@ -32,7 +32,7 @@ The WordPress KEYWORD plugin, WordPress Starter, FREE_DESCRIPTION.
 
 **General**
 
-* Enable Paging? - For `[wps_widget_list]`
+* Enable Paging? - For `[eddrl_widget_list]`
 	* Disable – Don't display paging
 	* Enable – display paging before and after post entries
 	* Before – display paging only before post entries
@@ -49,36 +49,37 @@ The WordPress KEYWORD plugin, WordPress Starter, FREE_DESCRIPTION.
 
 * Export Settings – These are your current settings in a serialized format. Copy the contents to make a backup of your settings.
 * Import Settings – Paste new serialized settings here to overwrite your current configuration.
-* Remove Plugin Data on Deletion? - Delete all WordPress Starter data and options from database on plugin deletion
+* Remove Plugin Data on Deletion? - Delete all EDD Retroactive Licensing data and options from database on plugin deletion
 * Reset to Defaults? – Check this box to reset options to their defaults
 
 = API =
 
-* Read the [WordPress Starter API](https://github.com/michael-cannon/wordpress-starter/blob/master/API.md).
+* Read the [EDD Retroactive Licensing API](http://aihr.us/easy-digital-downloads-retroactive-licensing/api/).
 
 = Languages =
 
-You can translate this plugin into your own language if it's not done so already. The localization file `wordpress-starter.pot` can be found in the `languages` folder of this plugin. After translation, please [send the localized file](http://aihr.us/contact-aihrus/) to the plugin author.
+You can translate this plugin into your own language if it's not done so already. The localization file `edd-retroactive-licensing.pot` can be found in the `languages` folder of this plugin. After translation, please [send the localized file](http://aihr.us/contact-aihrus/) to the plugin author.
 
 See the FAQ for further localization tips.
 
 = Support =
 
-Please visit the [WordPress Starter Knowledge Base](https://aihrus.zendesk.com/categories/20102742-WordPress-Starter-Plugin) for frequently asked questions, offering ideas, or getting support.
+Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zendesk.com/categories/20133716-Easy-Digital-Downloads-Retroactive-Licensing) for frequently asked questions, offering ideas, or getting support.
 
-If you want to contribute and I hope you do, visit the [WordPress Starter Github repository](https://github.com/michael-cannon/wordpress-starter).
+If you want to contribute and I hope you do, visit the [EDD Retroactive Licensing Github repository](https://github.com/michael-cannon/edd-retroactive-licensing).
 
 
 == Installation ==
 
-1. Via WordPress Admin > Plugins > Add New, Upload the `wordpress-starter.zip` file
-1. Alternately, unzip `wordpress-starter.zip` the file and then via FTP, upload `wordpress-starter` directory to the `/wp-content/plugins/` directory
-1. Activate the 'WordPress Starter' plugin after uploading or through WP Admin > Plugins
+1. Via WordPress Admin > Plugins > Add New, Upload the `edd-retroactive-licensing.zip` file
+1. Alternately, unzip `edd-retroactive-licensing.zip` the file and then via FTP, upload `edd-retroactive-licensing` directory to the `/wp-content/plugins/` directory
+1. Activate the 'EDD Retroactive Licensing' plugin after uploading or through WP Admin > Plugins
+1. Set the license key via WP Admin > Downloads > Settings, Licenses tab
 
 
 == Frequently Asked Questions ==
 
-Please visit the [WordPress Starter Knowledge Base](https://aihrus.zendesk.com/categories/20102742-WordPress-Starter-Plugin) for frequently asked questions, offering ideas, or getting support.
+Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zendesk.com/categories/20133716-Easy-Digital-Downloads-Retroactive-Licensing) for frequently asked questions, offering ideas, or getting support.
 
 
 == Screenshots ==
@@ -88,7 +89,7 @@ Please visit the [WordPress Starter Knowledge Base](https://aihrus.zendesk.com/c
 
 == Changelog ==
 
-See [Changelog](https://github.com/michael-cannon/wordpress-starter/blob/master/CHANGELOG.md)
+See [Changelog](http://aihr.us/easy-digital-downloads-retroactive-licensing/changelog/)
 
 
 == Upgrade Notice ==
@@ -100,14 +101,14 @@ See [Changelog](https://github.com/michael-cannon/wordpress-starter/blob/master/
 
 == Beta Testers Needed ==
 
-I really want WordPress Starter and WordPress Starter Premium to be the best WordPress plugins of their type. However, it's beyond me to do it alone.
+I really want EDD Retroactive Licensing and EDD Retroactive Licensing Premium to be the best WordPress plugins of their type. However, it's beyond me to do it alone.
 
-I need beta testers to help with ensuring pending releases of WordPress Starter and WordPress Starter Premium are solid. This would benefit us all by helping reduce the number of releases and raise code quality.
+I need beta testers to help with ensuring pending releases of EDD Retroactive Licensing and EDD Retroactive Licensing Premium are solid. This would benefit us all by helping reduce the number of releases and raise code quality.
 
 [Please contact me directly](http://aihr.us/contact-aihrus/).
 
-Beta testers benefit directly with latest versions, a free 1-site license for WordPress Starter Premium, and personalized support assistance.
+Beta testers benefit directly with latest versions, a free 1-site license for EDD Retroactive Licensing Premium, and personalized support assistance.
 
 == TODO ==
 
-See [TODO](https://github.com/michael-cannon/wordpress-starter/blob/master/TODO.md)
+See [TODO](https://github.com/michael-cannon/edd-retroactive-licensing/blob/master/TODO.md)

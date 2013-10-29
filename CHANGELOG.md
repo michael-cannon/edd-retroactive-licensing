@@ -1,14 +1,14 @@
-# CHANGELOG WordPress Starter plugin for WordPress
+# CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
 * Abstract get_posts_to_process method
 * Add Ajax processing screen
 * Add StillMaintained.com notice
-* Add action `wordpress_starter_update`
+* Add action `eddrl__update`
 * Add and highlight video introduction
 * Add post_id to do_something
 * Add settings help tabs
-* Add shortcode `wordpress_starter_shortcode`
+* Add shortcode `eddrl__shortcode`
 * Add trim validator
 * Adjust load priority to support other plugins tying in
 * Allow blank NEW_* settings
@@ -25,7 +25,7 @@
 * Full stack developer verbiage
 * Minimally require WordPress 3.5
 * Purge excess code
-* Rename `wordpress_starter` to `wps` for action and filter names
+* Rename `eddrl_` to `wps` for action and filter names
 * Revise installation instructions
 * SEO tweaks
 * Simplify `wp_enqueue_style` handling
