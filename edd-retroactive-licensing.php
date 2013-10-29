@@ -24,9 +24,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 class EDD_Retroactive_Licensing {
-	const ID          = 'edd-retroactive-licensing';
-	const PLUGIN_FILE = 'edd-retroactive-licensing/edd-retroactive-licensing.php';
-	const VERSION     = '0.0.1';
+	const EDD_PLUGIN_FILE      = 'easy-digital-downloads/easy-digital-downloads.php';
+	const ID                   = 'edd-retroactive-licensing';
+	const PLUGIN_FILE          = 'edd-retroactive-licensing/edd-retroactive-licensing.php';
+	const REQUIRED_EDD_VERSION = '1.8.2.1';
+	const VERSION              = '0.0.1';
 
 	private static $base;
 	private static $post_types;
@@ -46,6 +48,9 @@ class EDD_Retroactive_Licensing {
 
 
 	public function admin_init() {
+		if ( ! self::version_check() )
+			return;
+
 		$this->update();
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
@@ -101,6 +106,12 @@ EOD;
 	public function activation() {
 		if ( ! current_user_can( 'activate_plugins' ) )
 			return;
+
+		if ( ! is_plugin_active( EDD_Retroactive_Licensing::EDD_PLUGIN_FILE ) ) {
+			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
+			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', 'notice_edd_version' ) );
+			return;
+		}
 	}
 
 
@@ -534,13 +545,53 @@ EOD;
 	}
 
 
+	public function notice_edd_version() {
+		$edd_slug  = 'easy-digital-downloads';
+		$is_active = is_plugin_active( self::EDD_PLUGIN_FILE );
+
+		if ( $is_active ) {
+			$link = sprintf( __( '<a href="%1$s">update to</a>' ), self_admin_url( 'update-core.php' ) );
+		} else {
+			$plugins = get_plugins();
+			if ( empty( $plugins[ self::EDD_PLUGIN_FILE ] ) ) {
+				$install = esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $edd_slug ), 'install-plugin_' . $edd_slug ) );
+				$link    = sprintf( __( '<a href="%1$s">install</a>' ), $install );
+			} else {
+				$activate = esc_url( wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . self::EDD_PLUGIN_FILE ), 'activate-plugin_' . self::EDD_PLUGIN_FILE ) );
+				$link     = sprintf( __( '<a href="%1$s">activate</a>' ), $activate );
+			}
+		}
+
+		$content  = '<div class="error"><p>';
+		$content .= sprintf( __( 'Plugin EDD Retroactive Licensing has been deactivated. Please %1$s Easy Digital Sales version %2$s or newer before activating EDD Retroactive Licensing.' ), $link, self::REQUIRED_EDD_VERSION );
+		$content .= '</p></div>';
+
+		echo $content;
+	}
+
+
+	public function version_check() {
+		$good_version = true;
+
+		if ( is_plugin_inactive( self::EDD_PLUGIN_FILE ) || EDD_VERSION < self::REQUIRED_EDD_VERSION )
+			$good_version = false;
+
+		if ( ! $good_version && is_plugin_active( self::$base ) ) {
+			deactivate_plugins( self::$base );
+			add_action( 'admin_notices', array( $this, 'notice_edd_version' ) );
+		}
+
+		return $good_version;
+	}
+
+
 }
 
 
 if ( ! class_exists( 'EDD_License' ) )
-	include dirname( __FILE__ ) . '/lib/EDD_License_Handler.php';
+	include_once dirname( __FILE__ ) . '/lib/EDD_License_Handler.php';
 
-$license = new EDD_License( __FILE__, 'EDD Retroactive Licensing', EDD_Retroactive_Licensing::VERSION, 'Michael Cannon', null, 'http://aihr.us' );
+$license = new EDD_License( __FILE__, 'EDD Retroactive Licensing', EDD_Retroactive_Licensing::VERSION, 'Michael Cannon' );
 
 
 register_activation_hook( __FILE__, array( 'EDD_Retroactive_Licensing', 'activation' ) );
@@ -566,15 +617,20 @@ function eddrl_init() {
 
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 	if ( is_plugin_active( EDD_Retroactive_Licensing::PLUGIN_FILE ) ) {
-		require_once 'lib/class-edd-retroactive-licensing-settings.php';
+		if ( is_plugin_active( EDD_Retroactive_Licensing::EDD_PLUGIN_FILE ) ) {
+			require_once 'lib/class-edd-retroactive-licensing-settings.php';
 
-		global $EDD_Retroactive_Licensing;
-		if ( is_null( $EDD_Retroactive_Licensing ) )
-			$EDD_Retroactive_Licensing = new EDD_Retroactive_Licensing();
+			global $EDD_Retroactive_Licensing;
+			if ( is_null( $EDD_Retroactive_Licensing ) )
+				$EDD_Retroactive_Licensing = new EDD_Retroactive_Licensing();
 
-		global $EDD_Retroactive_Licensing_Settings;
-		if ( is_null( $EDD_Retroactive_Licensing_Settings ) )
-			$EDD_Retroactive_Licensing_Settings = new EDD_Retroactive_Licensing_Settings();
+			global $EDD_Retroactive_Licensing_Settings;
+			if ( is_null( $EDD_Retroactive_Licensing_Settings ) )
+				$EDD_Retroactive_Licensing_Settings = new EDD_Retroactive_Licensing_Settings();
+		} else {
+			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
+			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', 'notice_edd_version' ) );
+		}
 	}
 }
 
