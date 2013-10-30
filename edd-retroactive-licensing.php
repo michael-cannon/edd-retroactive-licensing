@@ -24,10 +24,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 class EDD_Retroactive_Licensing {
+	const EDD_ID               = 'download';
 	const EDD_PLUGIN_FILE      = 'easy-digital-downloads/easy-digital-downloads.php';
 	const ID                   = 'edd-retroactive-licensing';
 	const PLUGIN_FILE          = 'edd-retroactive-licensing/edd-retroactive-licensing.php';
 	const REQUIRED_EDD_VERSION = '1.8.2.1';
+	const SLUG                 = 'eddrl_';
 	const VERSION              = '0.0.1';
 
 	private static $base;
@@ -36,6 +38,7 @@ class EDD_Retroactive_Licensing {
 	public static $donate_button;
 	public static $menu_id;
 	public static $settings_link;
+	public static $settings_link_email;
 
 
 	public function __construct() {
@@ -52,6 +55,7 @@ class EDD_Retroactive_Licensing {
 			return;
 
 		$this->update();
+
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
 
@@ -64,7 +68,8 @@ class EDD_Retroactive_Licensing {
 </form>
 EOD;
 
-		self::$settings_link = '<a href="' . get_admin_url() . 'options-general.php?page=' . EDD_Retroactive_Licensing_Settings::ID . '">' . __( 'Settings', 'edd-retroactive-licensing' ) . '</a>';
+		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_ID . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings' ) . '</a>';
+		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_ID . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails' ) . '</a>';
 	}
 
 
@@ -73,14 +78,6 @@ EOD;
 
 		add_action( 'admin_print_scripts-' . self::$menu_id, array( $this, 'scripts' ) );
 		add_action( 'admin_print_styles-' . self::$menu_id, array( $this, 'styles' ) );
-
-		add_screen_meta_link(
-			'eddrl_settings_link',
-			esc_html__( 'EDD Retroactive Licensing Settings', 'edd-retroactive-licensing' ),
-			admin_url( 'options-general.php?page=' . EDD_Retroactive_Licensing_Settings::ID ),
-			self::$menu_id,
-			array( 'style' => 'font-weight: bold;' )
-		);
 	}
 
 
@@ -93,6 +90,7 @@ EOD;
 
 	public function plugin_action_links( $links, $file ) {
 		if ( $file == self::$base ) {
+			array_unshift( $links, self::$settings_link_email );
 			array_unshift( $links, self::$settings_link );
 
 			$link = '<a href="' . get_admin_url() . 'tools.php?page=' . self::ID . '">' . esc_html__( 'Process', 'edd-retroactive-licensing' ) . '</a>';
@@ -128,7 +126,7 @@ EOD;
 		global $wpdb;
 
 		require_once 'lib/class-edd-retroactive-licensing-settings.php';
-		$delete_data = eddrl_get_option( 'delete_data', false );
+		$delete_data = self::get_edd_options( 'delete_data', false );
 		if ( $delete_data ) {
 			delete_option( EDD_Retroactive_Licensing_Settings::ID );
 			$wpdb->query( 'OPTIMIZE TABLE `' . $wpdb->options . '`' );
@@ -140,7 +138,7 @@ EOD;
 		if ( $file != self::$base )
 			return $input;
 
-		$disable_donate = eddrl_get_option( 'disable_donate' );
+		$disable_donate = self::get_edd_options( 'disable_donate' );
 		if ( $disable_donate )
 			return $input;
 
@@ -183,8 +181,8 @@ EOD;
 	<h2><?php _e( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ); ?></h2>
 
 <?php
-		if ( eddrl_get_option( 'debug_mode' ) ) {
-			$posts_to_import = eddrl_get_option( 'posts_to_import' );
+		if ( self::get_edd_options( 'debug_mode' ) ) {
+			$posts_to_import = self::get_edd_options( 'posts_to_import' );
 			$posts_to_import = explode( ',', $posts_to_import );
 			foreach ( $posts_to_import as $post_id ) {
 				$this->post_id = $post_id;
@@ -235,7 +233,7 @@ EOD;
 			'order' => 'DESC',
 		);
 
-		$include_ids = eddrl_get_option( 'posts_to_import' );
+		$include_ids = self::get_edd_options( 'posts_to_import' );
 		if ( $include_ids ) {
 			$query[ 'post__in' ] = str_getcsv( $include_ids );
 		} else {
@@ -250,14 +248,14 @@ EOD;
 			unset( $query['meta_query'] );
 		}
 
-		$skip_ids = eddrl_get_option( 'skip_importing_post_ids' );
+		$skip_ids = self::get_edd_options( 'skip_importing_post_ids' );
 		if ( $skip_ids )
 			$query[ 'post__not_in' ] = str_getcsv( $skip_ids );
 
 		$results  = new WP_Query( $query );
 		$query_wp = $results->request;
 
-		$limit = eddrl_get_option( 'limit' );
+		$limit = self::get_edd_options( 'limit' );
 		if ( $limit )
 			$query_wp = preg_replace( '#\bLIMIT 0,.*#', 'LIMIT 0,' . $limit, $query_wp );
 		else
@@ -446,7 +444,7 @@ EOD;
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
 	public function ajax_process_post() {
-		if ( ! eddrl_get_option( 'debug_mode' ) ) {
+		if ( ! self::get_edd_options( 'debug_mode' ) ) {
 			error_reporting( 0 ); // Don't break the JSON result
 			header( 'Content-type: application/json' );
 			$this->post_id = intval( $_REQUEST['id'] );
@@ -482,32 +480,16 @@ EOD;
 	}
 
 
-	public function admin_notices_donate() {
-		$content  = '<div class="updated fade"><p>';
-		$content .= sprintf( __( 'Please donate $5 towards development and support of this EDD Retroactive Licensing plugin. %s', 'edd-retroactive-licensing' ), self::$donate_button );
-		$content .= '</p></div>';
-
-		echo $content;
-	}
-
-
 	public function update() {
-		$prior_version = eddrl_get_option( 'admin_notices' );
+		$prior_version = self::get_edd_options( 'version' );
 		if ( $prior_version ) {
 			if ( $prior_version < '0.0.1' )
 				add_action( 'admin_notices', array( $this, 'admin_notices_0_0_1' ) );
 
-			if ( $prior_version < self::VERSION )
+			if ( $prior_version < self::VERSION ) {
 				do_action( 'eddrl_update' );
-
-			eddrl_set_option( 'admin_notices' );
-		}
-
-		// display donate on major/minor version release
-		$donate_version = eddrl_get_option( 'donate_version', false );
-		if ( ! $donate_version || ( $donate_version != self::VERSION && preg_match( '#\.0$#', self::VERSION ) ) ) {
-			add_action( 'admin_notices', array( $this, 'admin_notices_donate' ) );
-			eddrl_set_option( 'donate_version', self::VERSION );
+				self::set_edd_options( self::SLUG . 'version', self::VERSION );
+			}
 		}
 	}
 
@@ -585,6 +567,27 @@ EOD;
 	}
 
 
+	public static function get_edd_options( $key = null, $default = null ) {
+		global $edd_options;
+
+		if ( is_null( $key ) )
+			return $edd_options;
+		elseif ( isset( $edd_options[ self::SLUG . $key ] ) )
+			return $edd_options[ self::SLUG . $key ];
+		elseif ( isset( $edd_options[ $key ] ) )
+			return $edd_options[ $key ];
+		else
+			return $default;
+	}
+
+
+	public static function set_edd_options( $key, $default ) {
+		global $edd_options;
+
+		$edd_options[ $key ] = $default;
+	}
+
+
 }
 
 
@@ -612,21 +615,12 @@ function eddrl_init() {
 	if ( ! is_admin() )
 		return;
 
-	if ( ! function_exists( 'add_screen_meta_link' ) )
-		require_once 'lib/screen-meta-links.php';
-
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 	if ( is_plugin_active( EDD_Retroactive_Licensing::PLUGIN_FILE ) ) {
 		if ( is_plugin_active( EDD_Retroactive_Licensing::EDD_PLUGIN_FILE ) ) {
-			require_once 'lib/class-edd-retroactive-licensing-settings.php';
-
 			global $EDD_Retroactive_Licensing;
 			if ( is_null( $EDD_Retroactive_Licensing ) )
 				$EDD_Retroactive_Licensing = new EDD_Retroactive_Licensing();
-
-			global $EDD_Retroactive_Licensing_Settings;
-			if ( is_null( $EDD_Retroactive_Licensing_Settings ) )
-				$EDD_Retroactive_Licensing_Settings = new EDD_Retroactive_Licensing_Settings();
 		} else {
 			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
 			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', 'notice_edd_version' ) );
