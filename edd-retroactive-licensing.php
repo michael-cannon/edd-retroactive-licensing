@@ -25,6 +25,7 @@
  */
 class EDD_Retroactive_Licensing {
 	const EDD_PT                 = 'download';
+	const EDD_LICENSE_PT         = 'edd_license';
 	const EDD_PAYMENT_PT         = 'edd_payment';
 	const EDD_PLUGIN_FILE        = 'easy-digital-downloads/easy-digital-downloads.php';
 	const EDDSL_PLUGIN_FILE      = 'edd-software-licensing/edd-software-licenses.php';
@@ -101,7 +102,7 @@ class EDD_Retroactive_Licensing {
 
 		if ( ! is_plugin_active( EDD_Retroactive_Licensing::EDD_PLUGIN_FILE ) ) {
 			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
-			EDD_Retroactive_Licensing::set_notice( 'notice_edd_version' );
+			EDD_Retroactive_Licensing::set_notice( 'notice_version' );
 
 			return;
 		}
@@ -138,7 +139,7 @@ class EDD_Retroactive_Licensing {
 	public function user_interface() {
 		// Capability check
 		if ( ! current_user_can( 'manage_options' ) )
-			wp_die( $this->post_id, esc_html__( "Your user account doesn't have permission to access this.", 'edd-retroactive-licensing' ) );
+			wp_die( $this->post_id, esc_html__( 'Your user account doesn\'t have permission to access this.', 'edd-retroactive-licensing' ) );
 
 ?>
 
@@ -185,31 +186,65 @@ class EDD_Retroactive_Licensing {
 		global $wpdb;
 
 		$query = array(
-			'post_status' => array( 'publish', 'private' ),
+			'post_status' => array( 'publish', 'edd_subscription' ),
 			'post_type' => self::$post_types,
 			'orderby' => 'post_modified',
 			'order' => 'DESC',
 		);
 
+		$post__not_in = array();
+
 		$include_ids = self::get_edd_options( 'payment_ids' );
 		if ( $include_ids ) {
-			$query[ 'post__in' ] = str_getcsv( $include_ids );
+			$query['post__in'] = str_getcsv( $include_ids );
 		} else {
-			// TODO ignore those with activated license keys
-			$query['posts_per_page'] = 1;
-			$query['meta_query']     = array(
-				array(
-					'key' => 'TBD',
-					'value' => '',
-					'compare' => '!=',
+			// products with active licensing
+			$product_query = array(
+				'post_status' => 'publish',
+				'post_type' => self::EDD_PT,
+				'posts_per_page' => 1,
+				'meta_query' => array(
+					array(
+						'key' => '_edd_sl_enabled',
+						'value' => 1,
+						'compare' => '=',
+					),
 				),
 			);
-			unset( $query['meta_query'] );
+
+			$results  = new WP_Query( $product_query );
+			$query_wp = $results->request;
+			$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
+			$products = $wpdb->get_col( $query_wp );
+			$products = implode( ',', $products );
+
+			// licensed payments of those products
+			$license_query = <<<EOD
+				SELECT pm.meta_value
+				FROM {$wpdb->postmeta} pm
+				WHERE 1 = 1
+					AND pm.meta_key = '_edd_sl_payment_id'
+					AND pm.meta_id NOT IN (
+						SELECT meta_id
+						FROM {$wpdb->postmeta}
+						WHERE 1 = 1
+							AND meta_key = '_edd_sl_download_id'
+							AND meta_value IN ( $products )
+					)
+EOD;
+
+			$licenses     = $wpdb->get_col( $license_query );
+			$post__not_in = array_merge( $post__not_in, $licenses );
 		}
 
 		$skip_ids = self::get_edd_options( 'skip_payment_ids' );
 		if ( $skip_ids )
-			$query[ 'post__not_in' ] = str_getcsv( $skip_ids );
+			$post__not_in = array_merge( $post__not_in, str_getcsv( $skip_ids ) );
+
+		if ( ! empty( $post__not_in ) ) {
+			$post__not_in          = array_unique( $post__not_in );
+			$query['post__not_in'] = $post__not_in;
+		}
 
 		$results  = new WP_Query( $query );
 		$query_wp = $results->request;
@@ -459,7 +494,7 @@ class EDD_Retroactive_Licensing {
 	}
 
 
-	public function notice_edd_version() {
+	public function notice_version() {
 		$edd_slug  = 'easy-digital-downloads';
 		$is_active = is_plugin_active( self::EDD_PLUGIN_FILE );
 
@@ -499,7 +534,7 @@ class EDD_Retroactive_Licensing {
 
 		if ( ! $edd_okay && is_plugin_active( self::$base ) ) {
 			deactivate_plugins( self::$base );
-			self::set_notice( 'notice_edd_version' );
+			self::set_notice( 'notice_version' );
 		}
 
 		if ( is_plugin_inactive( self::EDDSL_PLUGIN_FILE ) )

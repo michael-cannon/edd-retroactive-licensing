@@ -8,6 +8,7 @@
 * Move processor to Downloads menu section
 * Remove donate links
 * Removed unused EDD_Retroactive_Licensing_Settings
+* Select product payments without licenses that need licenses
 * Update description
 * Use `get_edd_options` and `set_edd_options` methods
 * Verbiage updates
