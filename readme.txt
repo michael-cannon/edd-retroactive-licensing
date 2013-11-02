@@ -1,4 +1,4 @@
-=== EDD Retroactive Licensing ===
+=== Easy Digital Downloads - Retroactive Licensing ===
 
 Contributors: comprock
 Donate link: http://aihr.us/about-aihrus/donate/

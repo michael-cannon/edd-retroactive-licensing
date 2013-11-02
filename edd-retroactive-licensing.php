@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: EDD Retroactive Licensing
+ * Plugin Name: Easy Digital Downloads - Retroactive Licensing
  * Plugin URI: http://aihr.us/easy-digital-downloads-retroactive-licensing/
  * Description: Send out license keys to users who bought software through Easy Digital Downloads before licensing was enabled.
  * Version: 0.0.1
@@ -24,19 +24,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 class EDD_Retroactive_Licensing {
-	const EDD_ID               = 'download';
-	const EDD_PLUGIN_FILE      = 'easy-digital-downloads/easy-digital-downloads.php';
-	const ID                   = 'edd-retroactive-licensing';
-	const PLUGIN_FILE          = 'edd-retroactive-licensing/edd-retroactive-licensing.php';
-	const REQUIRED_EDD_VERSION = '1.8.2.1';
-	const SLUG                 = 'eddrl_';
-	const VERSION              = '0.0.1';
+	const EDD_ID                 = 'download';
+	const EDD_PLUGIN_FILE        = 'easy-digital-downloads/easy-digital-downloads.php';
+	const EDDSL_PLUGIN_FILE      = 'edd-software-licensing/edd-software-licenses.php';
+	const ID                     = 'edd-retroactive-licensing';
+	const PLUGIN_FILE            = 'edd-retroactive-licensing/edd-retroactive-licensing.php';
+	const REQUIRED_EDD_VERSION   = '1.8.2.1';
+	const REQUIRED_EDDSL_VERSION = '2.1';
+	const SLUG                   = 'eddrl_';
+	const VERSION                = '0.0.1';
 
 	private static $base;
 	private static $post_types;
 
 	public static $donate_button;
 	public static $menu_id;
+	public static $notice_key;
 	public static $settings_link;
 	public static $settings_link_email;
 
@@ -46,15 +49,14 @@ class EDD_Retroactive_Licensing {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'init', array( $this, 'init' ) );
 		add_shortcode( 'eddrl_shortcode', array( $this, 'eddrl_shortcode' ) );
-		self::$base = plugin_basename( __FILE__ );
+
+		self::set_base();
 	}
 
 
 	public function admin_init() {
 		if ( ! self::version_check() )
 			return;
-
-		$this->update();
 
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
@@ -107,7 +109,15 @@ EOD;
 
 		if ( ! is_plugin_active( EDD_Retroactive_Licensing::EDD_PLUGIN_FILE ) ) {
 			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
-			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', 'notice_edd_version' ) );
+			EDD_Retroactive_Licensing::set_notice( 'notice_edd_version' );
+
+			return;
+		}
+
+		if ( ! is_plugin_active( EDD_Retroactive_Licensing::EDDSL_PLUGIN_FILE ) ) {
+			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
+			EDD_Retroactive_Licensing::set_notice( 'notice_eddsl' );
+
 			return;
 		}
 	}
@@ -480,20 +490,6 @@ EOD;
 	}
 
 
-	public function update() {
-		$prior_version = self::get_edd_options( 'version' );
-		if ( $prior_version ) {
-			if ( $prior_version < '0.0.1' )
-				add_action( 'admin_notices', array( $this, 'admin_notices_0_0_1' ) );
-
-			if ( $prior_version < self::VERSION ) {
-				do_action( 'eddrl_update' );
-				self::set_edd_options( self::SLUG . 'version', self::VERSION );
-			}
-		}
-	}
-
-
 	public static function scripts() {
 		if ( is_admin() ) {
 			wp_enqueue_script( 'jquery' );
@@ -510,9 +506,6 @@ EOD;
 		if ( is_admin() ) {
 			wp_register_style( 'jquery-ui-progressbar', plugins_url( 'css/redmond/jquery-ui-1.10.3.custom.min.css', __FILE__ ), false, '1.10.3' );
 			wp_enqueue_style( 'jquery-ui-progressbar' );
-		} else {
-			wp_register_style( __CLASS__, plugins_url( 'edd-retroactive-licensing.css', __FILE__ ) );
-			wp_enqueue_style( __CLASS__ );
 		}
 
 		do_action( 'eddrl_styles' );
@@ -545,23 +538,57 @@ EOD;
 		}
 
 		$content  = '<div class="error"><p>';
-		$content .= sprintf( __( 'Plugin EDD Retroactive Licensing has been deactivated. Please %1$s Easy Digital Sales version %2$s or newer before activating EDD Retroactive Licensing.' ), $link, self::REQUIRED_EDD_VERSION );
+		$content .= sprintf( __( 'Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales version %2$s or newer before activating %3$s.' ), $link, self::REQUIRED_EDD_VERSION, 'EDD Retroactive Licensing' );
 		$content .= '</p></div>';
 
 		echo $content;
 	}
 
 
-	public function version_check() {
-		$good_version = true;
+	public static function version_check() {
+		$edd_okay   = true;
+		$eddsl_okay = true;
+
+		if ( is_null( self::$base ) )
+			self::set_base();
+
+		if ( ! is_plugin_active( self::$base ) )
+			$edd_okay = false;
 
 		if ( is_plugin_inactive( self::EDD_PLUGIN_FILE ) || EDD_VERSION < self::REQUIRED_EDD_VERSION )
-			$good_version = false;
+			$edd_okay = false;
 
-		if ( ! $good_version && is_plugin_active( self::$base ) ) {
+		if ( ! $edd_okay && is_plugin_active( self::$base ) ) {
 			deactivate_plugins( self::$base );
-			add_action( 'admin_notices', array( $this, 'notice_edd_version' ) );
+			self::set_notice( 'notice_edd_version' );
 		}
+
+		if ( is_plugin_inactive( self::EDDSL_PLUGIN_FILE ) )
+			$eddsl_okay = false;
+
+		if ( ! $eddsl_okay && is_plugin_active( self::$base ) ) {
+			deactivate_plugins( self::$base );
+			self::set_notice( 'notice_eddsl' );
+		}
+
+		$good_version = $edd_okay && $eddsl_okay;
+
+		// never going to fire because version isn't set at this point
+		$prior_version = self::get_edd_options( 'version' );
+		if ( $good_version && $prior_version ) {
+			if ( $prior_version < '0.0.1' )
+				add_action( 'admin_notices', array( $this, 'admin_notices_0_0_1' ) );
+
+			if ( $prior_version < self::VERSION ) {
+				do_action( 'eddrl_update' );
+				self::set_edd_options( self::SLUG . 'version', self::VERSION );
+			}
+		}
+
+		if ( ! $good_version )
+			self::check_notices();
+		else
+			self::clear_notices();
 
 		return $good_version;
 	}
@@ -588,6 +615,71 @@ EOD;
 	}
 
 
+	public function notice_eddsl() {
+		$eddsl_slug = 'edd-software-licensing';
+
+		$plugins = get_plugins();
+		if ( empty( $plugins[ self::EDDSL_PLUGIN_FILE ] ) ) {
+			$install = esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $eddsl_slug ), 'install-plugin_' . $eddsl_slug ) );
+			$link    = sprintf( __( '<a href="%1$s">install</a>' ), $install );
+		} else {
+			$activate = esc_url( wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . self::EDDSL_PLUGIN_FILE ), 'activate-plugin_' . self::EDDSL_PLUGIN_FILE ) );
+			$link     = sprintf( __( '<a href="%1$s">activate</a>' ), $activate );
+		}
+
+		$content  = '<div class="error"><p>';
+		$content .= sprintf( __( 'Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales - Software Licenses version %2$s or newer before activating %3$s.' ), $link, self::REQUIRED_EDDSL_VERSION, 'EDD Retroactive Licensing' );
+		$content .= '</p></div>';
+
+		echo $content;
+	}
+
+
+	public static function set_base() {
+		self::$base = plugin_basename( __FILE__ );
+	}
+
+
+	public static function set_notice( $notice_name ) {
+		self::set_notice_key();
+
+		$notices = get_site_transient( self::$notice_key );
+		if ( false === $notices )
+			$notices = array();
+
+		$notices[] = $notice_name;
+
+		self::clear_notices();
+		$hmm = set_site_transient( self::$notice_key, $notices, HOUR_IN_SECONDS );
+	}
+
+
+	public static function clear_notices() {
+		self::set_notice_key();
+
+		delete_site_transient( self::$notice_key );
+	}
+
+
+	public static function check_notices() {
+		self::set_notice_key();
+
+		$notices = get_site_transient( self::$notice_key );
+
+		if ( false === $notices )
+			return;
+
+		foreach ( $notices as $key => $notice )
+			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', $notice ) );
+
+		self::clear_notices();
+	}
+
+
+	public static function set_notice_key() {
+		if ( is_null( self::$notice_key ) )
+			self::$notice_key = self::SLUG . 'notices';
+	}
 }
 
 
@@ -616,15 +708,10 @@ function eddrl_init() {
 		return;
 
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	if ( is_plugin_active( EDD_Retroactive_Licensing::PLUGIN_FILE ) ) {
-		if ( is_plugin_active( EDD_Retroactive_Licensing::EDD_PLUGIN_FILE ) ) {
-			global $EDD_Retroactive_Licensing;
-			if ( is_null( $EDD_Retroactive_Licensing ) )
-				$EDD_Retroactive_Licensing = new EDD_Retroactive_Licensing();
-		} else {
-			deactivate_plugins( EDD_Retroactive_Licensing::PLUGIN_FILE );
-			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', 'notice_edd_version' ) );
-		}
+	if ( EDD_Retroactive_Licensing::version_check() ) {
+		global $EDD_Retroactive_Licensing;
+		if ( is_null( $EDD_Retroactive_Licensing ) )
+			$EDD_Retroactive_Licensing = new EDD_Retroactive_Licensing();
 	}
 }
 
