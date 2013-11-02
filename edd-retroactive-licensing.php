@@ -25,6 +25,7 @@
  */
 class EDD_Retroactive_Licensing {
 	const EDD_ID                 = 'download';
+	const EDD_PAYMENT_PT         = 'edd_payment';
 	const EDD_PLUGIN_FILE        = 'easy-digital-downloads/easy-digital-downloads.php';
 	const EDDSL_PLUGIN_FILE      = 'edd-software-licensing/edd-software-licenses.php';
 	const ID                     = 'edd-retroactive-licensing';
@@ -37,7 +38,6 @@ class EDD_Retroactive_Licensing {
 	private static $base;
 	private static $post_types;
 
-	public static $donate_button;
 	public static $menu_id;
 	public static $notice_key;
 	public static $settings_link;
@@ -48,9 +48,9 @@ class EDD_Retroactive_Licensing {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'init', array( $this, 'init' ) );
-		add_shortcode( 'eddrl_shortcode', array( $this, 'eddrl_shortcode' ) );
 
 		self::set_base();
+		self::set_post_types();
 	}
 
 
@@ -59,16 +59,6 @@ class EDD_Retroactive_Licensing {
 			return;
 
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
-		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
-
-		self::$donate_button = <<<EOD
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="WM4F995W9LHXE">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-EOD;
 
 		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_ID . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings' ) . '</a>';
 		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_ID . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails' ) . '</a>';
@@ -76,6 +66,7 @@ EOD;
 
 
 	public function admin_menu() {
+		// TODO move processor to Downloads menu section
 		self::$menu_id = add_management_page( esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( $this, 'user_interface' ) );
 
 		add_action( 'admin_print_scripts-' . self::$menu_id, array( $this, 'scripts' ) );
@@ -86,7 +77,6 @@ EOD;
 	public function init() {
 		add_action( 'wp_ajax_ajax_process_post', array( $this, 'ajax_process_post' ) );
 		load_plugin_textdomain( self::ID, false, 'edd-retroactive-licensing/languages' );
-		self::set_post_types();
 	}
 
 
@@ -134,40 +124,6 @@ EOD;
 			return;
 
 		global $wpdb;
-
-		require_once 'lib/class-edd-retroactive-licensing-settings.php';
-		$delete_data = self::get_edd_options( 'delete_data', false );
-		if ( $delete_data ) {
-			delete_option( EDD_Retroactive_Licensing_Settings::ID );
-			$wpdb->query( 'OPTIMIZE TABLE `' . $wpdb->options . '`' );
-		}
-	}
-
-
-	public static function plugin_row_meta( $input, $file ) {
-		if ( $file != self::$base )
-			return $input;
-
-		$disable_donate = self::get_edd_options( 'disable_donate' );
-		if ( $disable_donate )
-			return $input;
-
-		$links = array(
-			'<a href="http://aihr.us/about-aihrus/donate/"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" alt="PayPal - The safer, easier way to pay online!" /></a>',
-			'<a href="http://aihr.us/downloads/edd-retroactive-licensing-premium-wordpress-plugin/">Purchase EDD Retroactive Licensing Premium</a>',
-		);
-
-		$input = array_merge( $input, $links );
-
-		return $input;
-	}
-
-
-	public static function set_post_types() {
-		$post_types       = get_post_types( array( 'public' => true ), 'names' );
-		self::$post_types = array();
-		foreach ( $post_types as $post_type )
-			self::$post_types[] = $post_type;
 	}
 
 
@@ -191,16 +147,6 @@ EOD;
 	<h2><?php _e( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ); ?></h2>
 
 <?php
-		if ( self::get_edd_options( 'debug_mode' ) ) {
-			$posts_to_import = self::get_edd_options( 'posts_to_import' );
-			$posts_to_import = explode( ',', $posts_to_import );
-			foreach ( $posts_to_import as $post_id ) {
-				$this->post_id = $post_id;
-				$this->ajax_process_post();
-			}
-
-			exit( __LINE__ . ':' . basename( __FILE__ ) . " DONE<br />\n" );
-		}
 
 		// If the button was clicked
 		if ( ! empty( $_POST[ self::ID ] ) || ! empty( $_REQUEST['posts'] ) ) {
@@ -217,7 +163,7 @@ EOD;
 
 			$count = count( $posts );
 			if ( ! $count ) {
-				echo '	<p>' . _e( 'All done. No posts needing processing found.', 'edd-retroactive-licensing' ) . '</p></div>';
+				echo '	<p>' . _e( 'All done. No purchases needing licenses found.', 'edd-retroactive-licensing' ) . '</p></div>';
 				return;
 			}
 
@@ -243,10 +189,11 @@ EOD;
 			'order' => 'DESC',
 		);
 
-		$include_ids = self::get_edd_options( 'posts_to_import' );
+		$include_ids = self::get_edd_options( 'payment_ids' );
 		if ( $include_ids ) {
 			$query[ 'post__in' ] = str_getcsv( $include_ids );
 		} else {
+			// TODO ignore those with activated license keys
 			$query['posts_per_page'] = 1;
 			$query['meta_query']     = array(
 				array(
@@ -258,7 +205,7 @@ EOD;
 			unset( $query['meta_query'] );
 		}
 
-		$skip_ids = self::get_edd_options( 'skip_importing_post_ids' );
+		$skip_ids = self::get_edd_options( 'skip_payment_ids' );
 		if ( $skip_ids )
 			$query[ 'post__not_in' ] = str_getcsv( $skip_ids );
 
@@ -282,7 +229,7 @@ EOD;
 	<form method="post" action="">
 <?php wp_nonce_field( self::ID ); ?>
 
-	<p><?php _e( 'Use this tool to process posts for TBD.', 'edd-retroactive-licensing' ); ?></p>
+	<p><?php _e( 'Use this tool to provision licenses for unlicensed Easy Digital Downloads products.', 'edd-retroactive-licensing' ); ?></p>
 
 	<p><?php _e( 'This processing is not reversible. Backup your database beforehand or be prepared to revert each transformmed post manually.', 'edd-retroactive-licensing' ); ?></p>
 
@@ -305,9 +252,9 @@ EOD;
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
 	public function show_status( $count, $posts ) {
-		echo '<p>' . esc_html__( 'Please be patient while this script run. This can take a while, up to a minute per post. Do not navigate away from this page until this script is done or the import will not be completed. You will be notified via this page when the import is completed.', 'edd-retroactive-licensing' ) . '</p>';
+		echo '<p>' . esc_html__( 'Please be patient while this script run. This can take a while, up to a minute per post. Do not navigate away from this page until this script is done or the licensing will not be completed. You will be notified via this page when the licensing is completed.', 'edd-retroactive-licensing' ) . '</p>';
 
-		echo '<p>' . sprintf( esc_html__( 'Estimated time required to import is %1$s minutes.', 'edd-retroactive-licensing' ), ( $count * 1 ) ) . '</p>';
+		echo '<p>' . sprintf( esc_html__( 'Estimated time required to send licenses is %1$s minutes.', 'edd-retroactive-licensing' ), ( $count * .33 ) ) . '</p>';
 
 		$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'edd-retroactive-licensing' ), 'javascript:history.go(-1)' ) : '';
 
@@ -322,14 +269,14 @@ EOD;
 		<div id="wpsposts-bar-percent" style="position:absolute;left:50%;top:50%;width:300px;margin-left:-150px;height:25px;margin-top:-9px;font-weight:bold;text-align:center;"></div>
 	</div>
 
-	<p><input type="button" class="button hide-if-no-js" name="wpsposts-stop" id="wpsposts-stop" value="<?php _e( 'Abort Processing Posts', 'edd-retroactive-licensing' ) ?>" /></p>
+	<p><input type="button" class="button hide-if-no-js" name="wpsposts-stop" id="wpsposts-stop" value="<?php _e( 'Abort Licensing Posts', 'edd-retroactive-licensing' ) ?>" /></p>
 
 	<h3 class="title"><?php _e( 'Debugging Information', 'edd-retroactive-licensing' ) ?></h3>
 
 	<p>
-		<?php printf( esc_html__( 'Total Postss: %s', 'edd-retroactive-licensing' ), $count ); ?><br />
-		<?php printf( esc_html__( 'Posts Processed: %s', 'edd-retroactive-licensing' ), '<span id="wpsposts-debug-successcount">0</span>' ); ?><br />
-		<?php printf( esc_html__( 'Process Failures: %s', 'edd-retroactive-licensing' ), '<span id="wpsposts-debug-failurecount">0</span>' ); ?>
+		<?php printf( esc_html__( 'Total Payments: %s', 'edd-retroactive-licensing' ), $count ); ?><br />
+		<?php printf( esc_html__( 'Payments Processed: %s', 'edd-retroactive-licensing' ), '<span id="wpsposts-debug-successcount">0</span>' ); ?><br />
+		<?php printf( esc_html__( 'License Failures: %s', 'edd-retroactive-licensing' ), '<span id="wpsposts-debug-failurecount">0</span>' ); ?>
 	</p>
 
 	<ol id="wpsposts-debuglist">
@@ -454,19 +401,18 @@ EOD;
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
 	public function ajax_process_post() {
-		if ( ! self::get_edd_options( 'debug_mode' ) ) {
-			error_reporting( 0 ); // Don't break the JSON result
-			header( 'Content-type: application/json' );
-			$this->post_id = intval( $_REQUEST['id'] );
-		}
+		error_reporting( 0 ); // Don't break the JSON result
+		header( 'Content-type: application/json' );
+		$this->post_id = intval( $_REQUEST['id'] );
 
 		$post = get_post( $this->post_id );
 		if ( ! $post || ! in_array( $post->post_type, self::$post_types )  )
-			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Processing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $this->post_id ) ) ) ) );
+			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $this->post_id ) ) ) ) );
 
 		$this->do_something( $this->post_id, $post );
 
-		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Post ID %3$s was successfully processed in %4$s seconds.', 'edd-retroactive-licensing' ), get_permalink( $this->post_id ), esc_html( get_the_title( $this->post_id ) ), $this->post_id, timer_stop() ) ) ) );
+		// TODO link to order or licensing details
+		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully processed in %4$s seconds.', 'edd-retroactive-licensing' ), get_permalink( $this->post_id ), esc_html( get_the_title( $this->post_id ) ), $this->post_id, timer_stop() ) ) ) );
 	}
 
 
@@ -509,14 +455,6 @@ EOD;
 		}
 
 		do_action( 'eddrl_styles' );
-	}
-
-
-	public static function eddrl_shortcode( $atts ) {
-		self::scripts();
-		self::styles();
-
-		return __CLASS__ . ' shortcode';
 	}
 
 
@@ -680,6 +618,14 @@ EOD;
 		if ( is_null( self::$notice_key ) )
 			self::$notice_key = self::SLUG . 'notices';
 	}
+
+
+	public static function set_post_types() {
+		if ( is_null( self::$post_types ) )
+			self::$post_types = array( self::EDD_PAYMENT_PT );
+	}
+
+
 }
 
 
