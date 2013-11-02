@@ -24,7 +24,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 class EDD_Retroactive_Licensing {
-	const EDD_ID                 = 'download';
+	const EDD_PT                 = 'download';
 	const EDD_PAYMENT_PT         = 'edd_payment';
 	const EDD_PLUGIN_FILE        = 'easy-digital-downloads/easy-digital-downloads.php';
 	const EDDSL_PLUGIN_FILE      = 'edd-software-licensing/edd-software-licenses.php';
@@ -40,6 +40,7 @@ class EDD_Retroactive_Licensing {
 
 	public static $menu_id;
 	public static $notice_key;
+	public static $payment_history_url;
 	public static $settings_link;
 	public static $settings_link_email;
 
@@ -60,14 +61,13 @@ class EDD_Retroactive_Licensing {
 
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 
-		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_ID . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings' ) . '</a>';
-		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_ID . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails' ) . '</a>';
+		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings' ) . '</a>';
+		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails' ) . '</a>';
 	}
 
 
 	public function admin_menu() {
-		// TODO move processor to Downloads menu section
-		self::$menu_id = add_management_page( esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( $this, 'user_interface' ) );
+		self::$menu_id = add_submenu_page( 'edit.php?post_type=' . self::EDD_PT, esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( $this, 'user_interface' ) );
 
 		add_action( 'admin_print_scripts-' . self::$menu_id, array( $this, 'scripts' ) );
 		add_action( 'admin_print_styles-' . self::$menu_id, array( $this, 'styles' ) );
@@ -77,6 +77,8 @@ class EDD_Retroactive_Licensing {
 	public function init() {
 		add_action( 'wp_ajax_ajax_process_post', array( $this, 'ajax_process_post' ) );
 		load_plugin_textdomain( self::ID, false, 'edd-retroactive-licensing/languages' );
+
+		self::$payment_history_url = admin_url( 'edit.php?post_type=download&page=edd-payment-history' );
 	}
 
 
@@ -85,7 +87,7 @@ class EDD_Retroactive_Licensing {
 			array_unshift( $links, self::$settings_link_email );
 			array_unshift( $links, self::$settings_link );
 
-			$link = '<a href="' . get_admin_url() . 'tools.php?page=' . self::ID . '">' . esc_html__( 'Process', 'edd-retroactive-licensing' ) . '</a>';
+			$link = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=' . self::ID . '">' . esc_html__( 'Process', 'edd-retroactive-licensing' ) . '</a>';
 			array_unshift( $links, $link );
 		}
 
@@ -144,7 +146,7 @@ class EDD_Retroactive_Licensing {
 
 <div class="wrap wpsposts">
 	<div class="icon32" id="icon-tools"></div>
-	<h2><?php _e( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ); ?></h2>
+	<h2><?php _e( 'Easy Digitial Downloads - Retroactive Licensing Processer', 'edd-retroactive-licensing' ); ?></h2>
 
 <?php
 
@@ -237,7 +239,7 @@ class EDD_Retroactive_Licensing {
 
 	<p><?php _e( 'To begin, just press the button below.', 'edd-retroactive-licensing' ); ?></p>
 
-	<p><input type="submit" class="button hide-if-no-js" name="<?php echo self::ID; ?>" id="<?php echo self::ID; ?>" value="<?php _e( 'Process EDD Retroactive Licensing', 'edd-retroactive-licensing' ) ?>" /></p>
+	<p><input type="submit" class="button hide-if-no-js" name="<?php echo self::ID; ?>" id="<?php echo self::ID; ?>" value="<?php _e( 'Perform EDD Retroactive Licensing', 'edd-retroactive-licensing' ) ?>" /></p>
 
 	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'edd-retroactive-licensing' ) ?></em></p></noscript>
 
@@ -258,7 +260,7 @@ class EDD_Retroactive_Licensing {
 
 		$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'edd-retroactive-licensing' ), 'javascript:history.go(-1)' ) : '';
 
-		$text_failures = sprintf( __( 'All done! %1$s posts were successfully processed in %2$s seconds and there were %3$s failures. To try importing the failed posts again, <a href="%4$s">click here</a>. %5$s', 'edd-retroactive-licensing' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'tools.php?page=' . self::ID . '&goback=1' ) ) . '&posts=' ) . "' + rt_failedlist + '", $text_goback );
+		$text_failures = sprintf( __( 'All done! %1$s posts were successfully processed in %2$s seconds and there were %3$s failures. To try importing the failed posts again, <a href="%4$s">click here</a>. %5$s', 'edd-retroactive-licensing' ), "' + rt_successes + '", "' + rt_totaltime + '", "' + rt_errors + '", esc_url( wp_nonce_url( admin_url( 'edit.php?post_type=' . self::EDD_PT . '&?page=' . self::ID . '&goback=1' ) ) . '&posts=' ) . "' + rt_failedlist + '", $text_goback );
 
 		$text_nofailures = sprintf( esc_html__( 'All done! %1$s posts were successfully processed in %2$s seconds and there were no failures. %3$s', 'edd-retroactive-licensing' ), "' + rt_successes + '", "' + rt_totaltime + '", $text_goback );
 ?>
@@ -271,7 +273,7 @@ class EDD_Retroactive_Licensing {
 
 	<p><input type="button" class="button hide-if-no-js" name="wpsposts-stop" id="wpsposts-stop" value="<?php _e( 'Abort Licensing Posts', 'edd-retroactive-licensing' ) ?>" /></p>
 
-	<h3 class="title"><?php _e( 'Debugging Information', 'edd-retroactive-licensing' ) ?></h3>
+	<h3 class="title"><?php _e( 'Status', 'edd-retroactive-licensing' ) ?></h3>
 
 	<p>
 		<?php printf( esc_html__( 'Total Payments: %s', 'edd-retroactive-licensing' ), $count ); ?><br />
@@ -411,8 +413,7 @@ class EDD_Retroactive_Licensing {
 
 		$this->do_something( $this->post_id, $post );
 
-		// TODO link to order or licensing details
-		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully processed in %4$s seconds.', 'edd-retroactive-licensing' ), get_permalink( $this->post_id ), esc_html( get_the_title( $this->post_id ) ), $this->post_id, timer_stop() ) ) ) );
+		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully processed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $this->post_id ), esc_html( get_the_title( $this->post_id ) ), $this->post_id, timer_stop() ) ) ) );
 	}
 
 
@@ -623,6 +624,14 @@ class EDD_Retroactive_Licensing {
 	public static function set_post_types() {
 		if ( is_null( self::$post_types ) )
 			self::$post_types = array( self::EDD_PAYMENT_PT );
+	}
+
+
+	public static function get_order_url( $payment_id ) {
+		$link_base = self::$payment_history_url . '&view=view-order-details';
+		$link      = add_query_arg( 'id', $payment_id, $link_base );
+
+		return $link;
 	}
 
 
