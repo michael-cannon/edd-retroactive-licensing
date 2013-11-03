@@ -3,7 +3,7 @@
  * Plugin Name: Easy Digital Downloads - Retroactive Licensing
  * Plugin URI: http://aihr.us/easy-digital-downloads-retroactive-licensing/
  * Description: Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Michael Cannon
  * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
  * License: GPLv2 or later
@@ -34,7 +34,7 @@ class EDD_Retroactive_Licensing {
 	const REQUIRED_EDD_VERSION   = '1.8.2.1';
 	const REQUIRED_EDDSL_VERSION = '2.1';
 	const SLUG                   = 'eddrl_';
-	const VERSION                = '1.0.0';
+	const VERSION                = '1.1.0';
 
 	private static $base;
 	private static $post_types;
@@ -77,6 +77,10 @@ class EDD_Retroactive_Licensing {
 
 	public function init() {
 		add_action( 'wp_ajax_ajax_process_post', array( $this, 'ajax_process_post' ) );
+		add_filter( 'edd_email_template_tags', array( $this, 'edd_email_template_tags' ), 10, 4 );
+		add_filter( 'edd_settings_emails', array( $this, 'edd_settings_emails' ), 10, 1 );
+		add_filter( 'edd_settings_extensions', array( $this, 'edd_settings_extensions' ), 10, 1 );
+
 		load_plugin_textdomain( self::ID, false, 'edd-retroactive-licensing/languages' );
 
 		self::$payment_history_url = admin_url( 'edit.php?post_type=download&page=edd-payment-history' );
@@ -183,81 +187,76 @@ class EDD_Retroactive_Licensing {
 	public static function get_posts_to_process() {
 		global $wpdb;
 
+		$enable_licensing = self::get_edd_options( 'initial_enable' );
+		if ( ! $enable_licensing )
+			return;
+
 		$post__in     = array();
 		$post__not_in = array();
 
-		$include_ids = self::get_edd_options( 'payment_ids' );
-		if ( $include_ids )
-			$post__in = array_merge( $post__in, str_getcsv( $include_ids ) );
-		else {
-			// products with active licensing
-			$product_query = array(
-				'post_status' => 'publish',
-				'post_type' => self::EDD_PT,
-				'posts_per_page' => 1,
-				'meta_query' => array(
-					array(
-						'key' => '_edd_sl_enabled',
-						'value' => 1,
-						'compare' => '=',
-					),
+		// products with active licensing
+		$product_query = array(
+			'post_status' => 'publish',
+			'post_type' => self::EDD_PT,
+			'posts_per_page' => 1,
+			'meta_query' => array(
+				array(
+					'key' => '_edd_sl_enabled',
+					'value' => 1,
+					'compare' => '=',
 				),
-			);
+			),
+		);
 
-			$results  = new WP_Query( $product_query );
-			$query_wp = $results->request;
-			$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
-			$products = $wpdb->get_col( $query_wp );
-			$products = apply_filters( 'eddrl_products', $products );
+		$results  = new WP_Query( $product_query );
+		$query_wp = $results->request;
+		$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
+		$products = $wpdb->get_col( $query_wp );
+		$products = apply_filters( 'eddrl_products', $products );
 
-			if ( empty( $products ) )
-				return;
+		if ( empty( $products ) )
+			return;
 
-			$products_csv = implode( ',', $products );
+		$products_csv = implode( ',', $products );
 
-			// licensed payments of those products
-			$license_query = <<<EOD
-				SELECT pm.meta_value
-				FROM {$wpdb->postmeta} pm
-				WHERE 1 = 1
-					AND pm.meta_key = '_edd_sl_payment_id'
-					AND pm.meta_id NOT IN (
-						SELECT meta_id
-						FROM {$wpdb->postmeta}
-						WHERE 1 = 1
-							AND meta_key = '_edd_sl_download_id'
-							AND meta_value IN ( $products_csv )
-					)
+		// licensed payments of those products
+		$license_query = <<<EOD
+			SELECT pm.meta_value
+			FROM {$wpdb->postmeta} pm
+			WHERE 1 = 1
+				AND pm.meta_key = '_edd_sl_payment_id'
+				AND pm.meta_id NOT IN (
+					SELECT meta_id
+					FROM {$wpdb->postmeta}
+					WHERE 1 = 1
+						AND meta_key = '_edd_sl_download_id'
+						AND meta_value IN ( $products_csv )
+				)
 EOD;
 
-			$licenses     = $wpdb->get_col( $license_query );
-			$post__not_in = array_merge( $post__not_in, $licenses );
+		$licenses     = $wpdb->get_col( $license_query );
+		$post__not_in = array_merge( $post__not_in, $licenses );
 
-			$regex  = <<<EOD
+		$regex  = <<<EOD
 pm.meta_value REGEXP '^.*s:12:"cart_details";.*s:2:"id";s:[[:digit:]]+:"%d";.*$'
 EOD;
-			$regexs = array();
-			foreach ( $products as $product )
-				$regexs[] = sprintf( $regex, $product );
+		$regexs = array();
+		foreach ( $products as $product )
+			$regexs[] = sprintf( $regex, $product );
 
-			$meta_values = implode( ' OR ', $regexs );
+		$meta_values = implode( ' OR ', $regexs );
 
-			// payments of those products
-			$payment_query = <<<EOD
-				SELECT pm.post_id
-				FROM {$wpdb->postmeta} pm
-				WHERE 1 = 1
-					AND pm.meta_key = '_edd_payment_meta'
-					AND ( {$meta_values} )
+		// payments of those products
+		$payment_query = <<<EOD
+			SELECT pm.post_id
+			FROM {$wpdb->postmeta} pm
+			WHERE 1 = 1
+				AND pm.meta_key = '_edd_payment_meta'
+				AND ( {$meta_values} )
 EOD;
 
-			$payments = $wpdb->get_col( $payment_query );
-			$post__in = array_merge( $post__in, $payments );
-		}
-
-		$skip_ids = self::get_edd_options( 'skip_payment_ids' );
-		if ( $skip_ids )
-			$post__not_in = array_merge( $post__not_in, str_getcsv( $skip_ids ) );
+		$payments = $wpdb->get_col( $payment_query );
+		$post__in = array_merge( $post__in, $payments );
 
 		$query = array(
 			'post_status' => array( 'publish', 'edd_subscription' ),
@@ -280,12 +279,7 @@ EOD;
 
 		$results  = new WP_Query( $query );
 		$query_wp = $results->request;
-
-		$limit = self::get_edd_options( 'limit' );
-		if ( $limit )
-			$query_wp = preg_replace( '#\bLIMIT 0,.*#', 'LIMIT 0,' . $limit, $query_wp );
-		else
-			$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
+		$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
 
 		$payments = $wpdb->get_col( $query_wp );
 		$payments = apply_filters( 'eddrl_payments', $payments );
@@ -324,7 +318,7 @@ EOD;
 	public function show_status( $count, $posts ) {
 		echo '<p>' . esc_html__( 'Please be patient while this script run. This can take a while, up to a minute per post. Do not navigate away from this page until this script is done or the licensing will not be completed. You will be notified via this page when the licensing is completed.', 'edd-retroactive-licensing' ) . '</p>';
 
-		echo '<p>' . sprintf( esc_html__( 'Estimated time required to send licenses is %1$s minutes.', 'edd-retroactive-licensing' ), ( $count * .33 ) ) . '</p>';
+		echo '<p>' . sprintf( esc_html__( 'Estimated time required to send licenses is %1$s minutes.', 'edd-retroactive-licensing' ), number_format( $count * .33 ) ) . '</p>';
 
 		$text_goback = ( ! empty( $_GET['goback'] ) ) ? sprintf( __( 'To go back to the previous page, <a href="%s">click here</a>.', 'edd-retroactive-licensing' ), 'javascript:history.go(-1)' ) : '';
 
@@ -474,28 +468,28 @@ EOD;
 		error_reporting( 0 ); // Don't break the JSON result
 		header( 'Content-type: application/json' );
 
-		$post_id = intval( $_REQUEST['id'] );
-		$post    = get_post( $post_id );
+		$payment_id = intval( $_REQUEST['id'] );
+		$post       = get_post( $payment_id );
 
 		if ( ! $post || ! in_array( $post->post_type, self::$post_types )  )
-			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $post_id ) ) ) ) );
+			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $payment_id ) ) ) ) );
 
-		$success = self::generate_licensing( $post_id, $post );
-		if ( $success )
-			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully licensed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $post_id ), esc_html( get_the_title( $post_id ) ), $post_id, timer_stop() ) ) ) );
+		$success = self::generate_licensing( $payment_id, $post );
+		if ( true === $success )
+			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully licensed.', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id ) ) ) );
 		else
-			die( json_encode( array( 'error' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was NOT licensed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $post_id ), esc_html( get_the_title( $post_id ) ), $post_id, timer_stop() ) ) ) );
+			die( json_encode( array( 'error' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was NOT licensed because "%4$".', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id, $success ) ) ) );
 	}
 
 
 	public static function generate_license_keys( $payment_id ) {
 		$payment_id = absint( $payment_id );
 		if ( empty( $payment_id ) )
-			return;
+			return esc_html__( 'Empty `$payment_id`', 'edd-retroactive-licensing' );
 
 		$downloads = edd_get_payment_meta_downloads( $payment_id );
 		if ( empty( $downloads ) )
-			return;
+			return esc_html__( 'No payment downloads found', 'edd-retroactive-licensing' );
 
 		$license_length = apply_filters( 'edd_sl_license_exp_length', '+1 year', $payment_id, 0, 0 );
 		$payment_date   = get_post_field( 'post_date', $payment_id );
@@ -710,12 +704,329 @@ EOD;
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	public static function generate_licensing( $post_id, $post ) {
-		$licensed = self::generate_license_keys( $post_id );
-		if ( ! $licensed )
-			return;
+	public static function generate_licensing( $payment_id, $post ) {
+		$licensed = self::generate_license_keys( $payment_id );
+		if ( true !== $licensed )
+			return $licensed;
+
+		$stage   = 'initial';
+		$emailed = self::send_email( $payment_id, $stage );
+
+		return $emailed;
+	}
+
+
+	public function edd_settings_extensions( $settings ) {
+		$settings[] = array(
+			'id' => self::SLUG . 'header',
+			'name' => '<h3 id="EDD_Retroactive_Licensing">' . esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ) . '</h3>',
+			'type' => 'header',
+		);
+
+		$pages         = get_pages();
+		$pages_options = array( 0 => '' ); // Blank option
+		if ( $pages )
+			foreach ( $pages as $page )
+				$pages_options[ $page->ID ] = $page->post_title;
+
+			$settings[] = array(
+				'id' => self::SLUG . 'contact_link',
+				'name' => esc_html__( 'Contact Page Link', 'edd-retroactive-licensing' ),
+				'desc' => esc_html__( 'This is a feedback page for users to contact you.', 'edd-retroactive-licensing' ),
+				'type' => 'select',
+				'options' => $pages_options,
+			);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'initial_header',
+			'name' => '<strong>' . esc_html__( 'License Provisioning', 'edd-retroactive-licensing' ) . '</strong>',
+			'type' => 'header',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'initial_enable',
+			'name' => esc_html__( 'Enabled?', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( 'Check this to enable licensing provision.', 'edd-retroactive-licensing' ),
+			'type' => 'checkbox',
+		);
+
+		return $settings;
+	}
+
+
+	public function edd_settings_emails( $settings ) {
+		$settings[] = array(
+			'id' => self::SLUG . 'header',
+			'name' => '<h3 id="EDD_Retroactive_Licensing">' . esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ) . '</h3>',
+			'type' => 'header',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'disable_admin_notices',
+			'name' => esc_html__( 'Disable Licensing Notifications', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( 'Check this box if you do not want to receive emails when sales recovery attempts are made.', 'edd-retroactive-licensing' ),
+			'type' => 'checkbox',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'initial_header',
+			'name' => '<strong>' . esc_html__( 'License Provisioning', 'edd-retroactive-licensing' ) . '</strong>',
+			'type' => 'header',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'initial_subject',
+			'name' => esc_html__( 'Licensing Subject', 'edd-retroactive-licensing' ),
+			'type' => 'text',
+			'std' => esc_html__( '{sitename}: Product Licensing', 'edd-retroactive-licensing' ),
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'initial_email',
+			'name' => esc_html__( 'Licensing Content', 'edd-retroactive-licensing' ),
+			'desc' => self::template_tags(),
+			'type' => 'rich_editor',
+			'std' => self::email_body_template(),
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'initial_admin_subject',
+			'name' => esc_html__( 'Licensing Notification Subject', 'edd-retroactive-licensing' ),
+			'type' => 'text',
+			'std' => esc_html__( '{sitename}: Product Licensing', 'edd-retroactive-licensing' ),
+		);
+
+		return $settings;
+	}
+
+
+	public function template_tags() {
+		$tags   = array();
+		$tags[] = esc_html__( 'Enter the email contents that is sent for retroactive licensing. HTML is accepted. Additional template tags:', 'edd-retroactive-licensing' );
+		$tags[] = '{admin_order_details_url} - ' . esc_html__( 'Admin order details URL', 'edd-retroactive-licensing' );
+		$tags[] = '{admin_order_details} - ' . esc_html__( 'Admin order details tag - Automatically prepended to admin notifications', 'edd-retroactive-licensing' );
+		$tags[] = '{contact_url} - ' . esc_html__( 'Contact page URL', 'edd-retroactive-licensing' );
+		$tags[] = '{contact} - ' . esc_html__( 'Contact page tag', 'edd-retroactive-licensing' );
+		$tags[] = '{site_url} - ' . esc_html__( 'Site URL', 'edd-retroactive-licensing' );
+		$tags[] = '{users_orders_url} - ' . esc_html__( 'User\'s orders URL', 'edd-retroactive-licensing' );
+		$tags[] = '{users_orders} - ' . esc_html__( 'User\'s orders tag - Automatically prepended to admin notifications', 'edd-retroactive-licensing' );
+
+		$tags = implode( '<br />', $tags );
+
+		return apply_filters( 'eddrl_template_tags', $tags );
+	}
+
+
+	public static function email_body_template() {
+		$template = __(
+			'Hello {name},
+
+We\'re sending you a software license for a {date} purchased item from {sitename} that now requires licensing for use and upgrades.
+
+We apologize for the inconvenience of having to set the license, but this few minute task will continue to ensure that your purchased sofware is the latest release with bug fixes and new enhancements.
+
+In general, to set the license, copy and paste your product\'s license from below into the appropriate license key field at WP Admin > Downloads > Settings, License tab.
+
+{license_keys}
+
+If you have any questions, please visit {contact} to share them.
+<hr />
+<a href="{site_url}">{sitename}</a> appreciates your business.',
+			'edd-retroactive-licensing'
+		);
+
+		return $template;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @SuppressWarnings(PHPMD.LongVariable)
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+	 */
+	public static function edd_email_template_tags( $message, $payment_data, $payment_id, $admin_notice ) {
+		$admin_order_details_url = self::get_order_url( $payment_id );
+		$admin_order_details     = self::get_order_link( $payment_id );
+
+		$contact_link = self::get_edd_options( 'contact_link' );
+		$links        = self::create_link( $contact_link );
+		if ( $links ) {
+			$contact     = $links['tag'];
+			$contact_url = $links['link'];
+		} else {
+			$contact     = '';
+			$contact_url = '';
+		}
+
+		$payment_meta      = edd_get_payment_meta( $payment_id );
+		$email             = $payment_meta['email'];
+		$users_orders_text = __( 'View <a href="%1$s">user\'s orders</a>.', 'edd-retroactive-licensing' );
+		$users_orders_url  = add_query_arg( 'user', $email, self::$payment_history_url );
+		$users_orders      = sprintf( $users_orders_text, $users_orders_url );
+
+		$message = str_replace( '{admin_order_details_url}', $admin_order_details_url, $message );
+		$message = str_replace( '{admin_order_details}', $admin_order_details, $message );
+		$message = str_replace( '{contact_url}', $contact_url, $message );
+		$message = str_replace( '{contact}', $contact, $message );
+		$message = str_replace( '{site_url}', site_url(), $message );
+		$message = str_replace( '{users_orders_url}', $users_orders_url, $message );
+		$message = str_replace( '{users_orders}', $users_orders, $message );
+
+		return $message;
+	}
+
+
+	public static function get_email_from() {
+		return self::get_edd_options( 'from_email', get_option( 'admin_email' ) );
+	}
+
+
+	public static function get_email_headers( $payment_id, $payment_data ) {
+		$from_name  = self::get_edd_options( 'from_name', get_bloginfo( 'name' ) );
+		$from_email = self::get_email_from();
+
+		$headers  = 'From: ' . stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) . " <$from_email>\r\n";
+		$headers .= 'Reply-To: '. $from_email . "\r\n";
+		$headers .= "Content-Type: text/html; charset=utf-8\r\n";
+		$headers  = apply_filters( 'eddrl_get_email_headers', $headers, $payment_id, $payment_data );
+
+		return $headers;
+	}
+
+
+	public static function get_full_name( $payment_id ) {
+		$user_id   = edd_get_payment_user_id( $payment_id );
+		$user_info = edd_get_payment_meta_user_info( $payment_id );
+
+		if ( ! empty( $user_id ) && $user_id > 0 ) {
+			$user_data = get_userdata( $user_id );
+			$name      = $user_data->display_name;
+		} elseif ( ! empty( $user_info['first_name'] ) && ! empty( $user_info['last_name'] ) ) {
+			$name = $user_info['first_name'] . ' ' . $user_info['last_name'];
+		} elseif ( ! empty( $user_info['first_name'] ) ) {
+			$name = $user_info['first_name'];
+		}
+
+		return $name;
+	}
+
+
+	public static function get_email_to( $payment_id ) {
+		$email = edd_get_payment_user_email( $payment_id );
+		$name  = self::get_full_name( $payment_id );
+
+		if ( $name )
+			$to = $name . ' <' . $email . '>';
+		else
+			$to = $email;
+
+		$to = apply_filters( 'eddrl_get_email_to', $to, $payment_id );
+
+		return $to;
+	}
+
+
+	public static function get_email_body( $email_text, $payment_data, $payment_id, $admin_notice = false ) {
+		if ( $admin_notice )
+			$email_text = '{admin_order_details} {users_orders}<hr />' . $email_text;
+
+		$email_body = edd_email_template_tags( $email_text, $payment_data, $payment_id, $admin_notice );
+		$email_body = apply_filters( 'eddrl_get_email_body', $email_body, $email_text, $payment_data, $payment_id );
+		$email_body = apply_filters( 'edd_purchase_receipt', $email_body, $payment_id, $payment_data );
+
+		$content  = edd_get_email_body_header();
+		$content .= $email_body;
+		$content .= edd_get_email_body_footer();
+
+		return $content;
+	}
+
+
+	public static function send_email( $payment_id, $stage ) {
+		$admin_notice  = ! self::get_edd_options( $stage . '_disable_admin_notices' );
+		$admin_subject = self::get_edd_options( $stage . '_admin_subject' );
+		$email_text    = self::get_edd_options( $stage . '_email' );
+		$payment_data  = edd_get_payment_meta( $payment_id );
+		$subject       = self::get_edd_options( $stage . '_subject' );
+
+		$headers = self::get_email_headers( $payment_id, $payment_data );
+		$to      = self::get_email_to( $payment_id );
+
+		$email_subject = edd_email_template_tags( $subject, $payment_data, $payment_id );
+		$email_body    = self::get_email_body( $email_text, $payment_data, $payment_id );
+		$attachments   = apply_filters( 'eddrl_process_attachments', array(), $payment_id, $payment_data );
+
+		$success = wp_mail( $to, $email_subject, $email_body, $headers, $attachments );
+		if ( $success ) {
+			$text = esc_html__( 'Retroactive licensing %2$s email sent: "%1$s"', 'edd-retroactive-licensing' );
+			edd_insert_payment_note( $payment_id, sprintf( $text, $email_subject, $stage ) );
+
+			if ( $admin_notice ) {
+				$to            = edd_get_admin_notice_emails();
+				$admin_subject = edd_email_template_tags( $admin_subject, $payment_data, $payment_id, true );
+				$email_body    = self::get_email_body( $email_text, $payment_data, $payment_id, true );
+				wp_mail( $to, $admin_subject, $email_body, $headers );
+			}
+
+			do_action( 'eddrl_post_licensing', $payment_id );
+		} else
+			return esc_html__( '`wp_mail` failed to send', 'edd-retroactive-licensing' );
 
 		return true;
+	}
+
+
+	/**
+	 * If incoming link is empty, then get_site_url() is used instead.
+	 */
+	public static function create_link( $link ) {
+		if ( empty( $link ) )
+			$link = get_site_url();
+
+		if ( preg_match( '#^\d+$#', $link ) ) {
+			$permalink = get_permalink( $link );
+			$title     = get_the_title( $link );
+
+			$tag  = '<a href="';
+			$tag .= $permalink;
+			$tag .= '" title="';
+			$tag .= $title;
+			$tag .= '">';
+			$tag .= $title;
+			$tag .= '</a>';
+		} else {
+			$orig_link = $link;
+			$do_http   = true;
+
+			if ( 0 === strpos( $link, '/' ) )
+				$do_http = false;
+
+			if ( $do_http && 0 === preg_match( '#https?://#', $link ) )
+				$link = 'http://' . $link;
+
+			$permalink = $link;
+
+			$tag  = '<a href="';
+			$tag .= $permalink;
+			$tag .= '">';
+			$tag .= $orig_link;
+			$tag .= '</a>';
+		}
+
+		return array(
+			'link' => $permalink,
+			'tag' => $tag,
+		);
+	}
+
+
+	public static function get_order_link( $payment_id = null ) {
+		$order_link = __( 'View <a href="%1$s">order details</a>.', 'edd-sales-recovery', 'edd-retroactive-licensing' );
+		$order_url  = self::get_order_url( $payment_id );
+		$order_link = sprintf( $order_link, $order_url );
+
+		return $order_link;
 	}
 
 

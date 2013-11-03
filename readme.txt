@@ -5,7 +5,7 @@ Donate link: http://aihr.us/about-aihrus/donate/
 Tags: EDD, easy digital downloads, license
 Requires at least: 3.6
 Tested up to: 3.8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,17 +16,38 @@ Send out license keys to users who bought products through Easy Digital Download
 
 Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
 
-[youtube http://www.youtube.com/watch?v=TBD]
+http://www.youtube.com/watch?v=TBD
 **[Video introduction](http://youtu.be/TBD)**
 
 = Primary Features =
 
-* Ajax based processing screen
 * API
+* Ajax-based retroactive license processing screen
+* Automatically selects unlicensed products needing licenses
+* Ensures required software is installed and active before running
+* License provisioning email and configuration options
+* Optional retroactive license processing or not
+* Sends email to product buyer and admin after license generation
 
 = Settings Options =
 
-**TBD**
+**Extensions**
+
+* Contact Page Link - This is a feedback page for users to contact you.
+
+**License Provisioning**
+
+* Enabled? - Check this to enable licensing provision.
+
+**Emails**
+
+* Disable Licensing Notifications - Check this box if you do not want to receive emails when sales recovery attempts are made.
+
+**License Provisioning**
+
+* Licensing Subject
+* Licensing Content
+* Licensing Notification Subject
 
 = API =
 
@@ -52,7 +73,11 @@ Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zende
 
 = Usage =
 
-1. Visit WordPress Admin > Downloads > Retroactive Licensing,
+1. Visit WordPress Admin > Downloads > Settings
+1. Configure and save Emails' tab settings
+1. Configure and save Extensons' tab settings
+1. Make sure to enable license provisioning via the checkbox
+1. Visit WordPress Admin > Downloads > Retroactive Licensing
 1. Click button 'Perform EDD Retroactive Licensing'
 1. Viola, all done!
 
@@ -64,7 +89,9 @@ Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zende
 
 == Screenshots ==
 
-1. TBD
+1. Easy Digitial Downloads - Retroactive Licensing Processer
+2. Retroactive license created and sent
+3. Licensing provision enabled - WP Admin > Downloads > Settings, Extensions tab
 
 
 == Changelog ==

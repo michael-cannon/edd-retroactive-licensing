@@ -2,6 +2,22 @@
 
 ## master
 
+## 1.1.0
+* Add API action eddrl_post_licensing
+* Add API filter eddrl_get_email_body
+* Add API filter eddrl_get_email_headers
+* Add API filter eddrl_get_email_to
+* Add API filter eddrl_process_attachments
+* Add API filter eddrl_template_tags
+* Add license provisioning email and extension options
+* Add screenshot 1. Easy Digitial Downloads - Retroactive Licensing Processer
+* Add screenshot 2. Retroactive license created and sent
+* Add screenshot 3. Licensing provision enabled - WP Admin > Downloads > Settings, Extensions tab
+* Check that Software Licensing plugin is installed and activated
+* Send notification emails of license generation
+* Show error messages during processing
+* Update readme
+
 ## 1.0.0
 * Add API filter eddrl_payments
 * Add API filter eddrl_products

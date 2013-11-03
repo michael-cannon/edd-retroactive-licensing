@@ -16,7 +16,31 @@ The [EDD Retroactive Licensing plugin](http://wordpress.org/plugins/edd-retroact
 
 	Scripts tie-in.
 
+* `eddrl_post_licensing`
+
+	Post licensing action when mail is successfully sent.
+
 ## Filters
+
+* `eddrl_template_tags`
+
+	Customize template tags.
+
+* `eddrl_get_email_to`
+
+	Customize email to.
+
+* `eddrl_get_email_headers`
+
+	Customize email headers.
+
+* `eddrl_get_email_body`
+
+	Customize email body.
+
+* `eddrl_process_attachments`
+
+	Add attachments to retroactive licensing emails.
 
 * `eddrl_payments`
 

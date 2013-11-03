@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Easy Digital Downloads - Retroactive Licensing 1.0.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/edd-retroactive-licensing\n"
-"POT-Creation-Date: 2013-11-03 02:43:22+00:00\n"
+"POT-Creation-Date: 2013-11-03 05:39:18+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,55 +24,56 @@ msgstr ""
 msgid "EDD Retroactive Licensing Processer"
 msgstr ""
 
-#: edd-retroactive-licensing.php:71
+#: edd-retroactive-licensing.php:71 edd-retroactive-licensing.php:722
+#: edd-retroactive-licensing.php:760
 msgid "Retroactive Licensing"
 msgstr ""
 
-#: edd-retroactive-licensing.php:91
+#: edd-retroactive-licensing.php:95
 msgid "Process"
 msgstr ""
 
-#: edd-retroactive-licensing.php:140
+#: edd-retroactive-licensing.php:144
 msgid "Your user account doesn't have permission to access this."
 msgstr ""
 
-#: edd-retroactive-licensing.php:148
+#: edd-retroactive-licensing.php:152
 msgid "Easy Digitial Downloads - Retroactive Licensing Processer"
 msgstr ""
 
-#: edd-retroactive-licensing.php:167
+#: edd-retroactive-licensing.php:171
 msgid "All done. No purchases needing licenses found."
 msgstr ""
 
-#: edd-retroactive-licensing.php:302
+#: edd-retroactive-licensing.php:296
 msgid ""
 "Use this tool to provision licenses for unlicensed Easy Digital Downloads "
 "products."
 msgstr ""
 
-#: edd-retroactive-licensing.php:304
+#: edd-retroactive-licensing.php:298
 msgid ""
 "This processing is not reversible. Backup your database beforehand or be "
 "prepared to revert each transformmed post manually."
 msgstr ""
 
-#: edd-retroactive-licensing.php:306
+#: edd-retroactive-licensing.php:300
 msgid "Please review your %s before proceeding."
 msgstr ""
 
-#: edd-retroactive-licensing.php:308
+#: edd-retroactive-licensing.php:302
 msgid "To begin, just press the button below."
 msgstr ""
 
-#: edd-retroactive-licensing.php:310
+#: edd-retroactive-licensing.php:304
 msgid "Perform EDD Retroactive Licensing"
 msgstr ""
 
-#: edd-retroactive-licensing.php:312 edd-retroactive-licensing.php:336
+#: edd-retroactive-licensing.php:306 edd-retroactive-licensing.php:330
 msgid "You must enable Javascript in order to proceed!"
 msgstr ""
 
-#: edd-retroactive-licensing.php:325
+#: edd-retroactive-licensing.php:319
 msgid ""
 "Please be patient while this script run. This can take a while, up to a "
 "minute per post. Do not navigate away from this page until this script is "
@@ -80,89 +81,216 @@ msgid ""
 "page when the licensing is completed."
 msgstr ""
 
-#: edd-retroactive-licensing.php:327
+#: edd-retroactive-licensing.php:321
 msgid "Estimated time required to send licenses is %1$s minutes."
 msgstr ""
 
-#: edd-retroactive-licensing.php:329
+#: edd-retroactive-licensing.php:323
 msgid "To go back to the previous page, <a href=\"%s\">click here</a>."
 msgstr ""
 
-#: edd-retroactive-licensing.php:331
+#: edd-retroactive-licensing.php:325
 msgid ""
 "All done! %1$s posts were successfully processed in %2$s seconds and there "
 "were %3$s failures. To try importing the failed posts again, <a href=\"%4$s"
 "\">click here</a>. %5$s"
 msgstr ""
 
-#: edd-retroactive-licensing.php:333
+#: edd-retroactive-licensing.php:327
 msgid ""
 "All done! %1$s posts were successfully processed in %2$s seconds and there "
 "were no failures. %3$s"
 msgstr ""
 
-#: edd-retroactive-licensing.php:342
+#: edd-retroactive-licensing.php:336
 msgid "Abort Licensing Posts"
 msgstr ""
 
-#: edd-retroactive-licensing.php:344
+#: edd-retroactive-licensing.php:338
 msgid "Status"
 msgstr ""
 
-#: edd-retroactive-licensing.php:347
+#: edd-retroactive-licensing.php:341
 msgid "Total Payments: %s"
 msgstr ""
 
-#: edd-retroactive-licensing.php:348
+#: edd-retroactive-licensing.php:342
 msgid "Payments Processed: %s"
 msgstr ""
 
-#: edd-retroactive-licensing.php:349
+#: edd-retroactive-licensing.php:343
 msgid "License Failures: %s"
 msgstr ""
 
-#: edd-retroactive-licensing.php:380
+#: edd-retroactive-licensing.php:374
 msgid "Stopping, please wait a moment."
 msgstr ""
 
-#: edd-retroactive-licensing.php:481
+#: edd-retroactive-licensing.php:475
 msgid "Failed Licensing: %s is incorrect post type."
 msgstr ""
 
-#: edd-retroactive-licensing.php:485
+#: edd-retroactive-licensing.php:479
 msgid ""
 "&quot;<a href=\"%1$s\" target=\"_blank\">%2$s</a>&quot; Payment ID %3$s was "
-"successfully licensed in %4$s seconds."
+"successfully licensed."
 msgstr ""
 
-#: edd-retroactive-licensing.php:487
+#: edd-retroactive-licensing.php:481
 msgid ""
 "&quot;<a href=\"%1$s\" target=\"_blank\">%2$s</a>&quot; Payment ID %3$s was "
-"NOT licensed in %4$s seconds."
+"NOT licensed because \"%4$\"."
 msgstr ""
 
-#: edd-retroactive-licensing.php:540
+#: edd-retroactive-licensing.php:488
+msgid "Empty `$payment_id`"
+msgstr ""
+
+#: edd-retroactive-licensing.php:492
+msgid "No payment downloads found"
+msgstr ""
+
+#: edd-retroactive-licensing.php:534
 msgid "<a href=\"%1$s\">update to</a>"
 msgstr ""
 
-#: edd-retroactive-licensing.php:545 edd-retroactive-licensing.php:633
+#: edd-retroactive-licensing.php:539 edd-retroactive-licensing.php:627
 msgid "<a href=\"%1$s\">install</a>"
 msgstr ""
 
-#: edd-retroactive-licensing.php:548 edd-retroactive-licensing.php:636
+#: edd-retroactive-licensing.php:542 edd-retroactive-licensing.php:630
 msgid "<a href=\"%1$s\">activate</a>"
 msgstr ""
 
-#: edd-retroactive-licensing.php:553
+#: edd-retroactive-licensing.php:547
 msgid ""
 "Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales version "
 "%2$s or newer before activating %3$s."
 msgstr ""
 
-#: edd-retroactive-licensing.php:640
+#: edd-retroactive-licensing.php:634
 msgid ""
 "Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales - Software "
 "Licenses version %2$s or newer before activating %3$s."
+msgstr ""
+
+#: edd-retroactive-licensing.php:734
+msgid "Contact Page Link"
+msgstr ""
+
+#: edd-retroactive-licensing.php:735
+msgid "This is a feedback page for users to contact you."
+msgstr ""
+
+#: edd-retroactive-licensing.php:742 edd-retroactive-licensing.php:773
+msgid "License Provisioning"
+msgstr ""
+
+#: edd-retroactive-licensing.php:748
+msgid "Enabled?"
+msgstr ""
+
+#: edd-retroactive-licensing.php:749
+msgid "Check this to enable licensing provision."
+msgstr ""
+
+#: edd-retroactive-licensing.php:766
+msgid "Disable Licensing Notifications"
+msgstr ""
+
+#: edd-retroactive-licensing.php:767
+msgid ""
+"Check this box if you do not want to receive emails when sales recovery "
+"attempts are made."
+msgstr ""
+
+#: edd-retroactive-licensing.php:779
+msgid "Licensing Subject"
+msgstr ""
+
+#: edd-retroactive-licensing.php:781 edd-retroactive-licensing.php:796
+msgid "{sitename}: Product Licensing"
+msgstr ""
+
+#: edd-retroactive-licensing.php:786
+msgid "Licensing Content"
+msgstr ""
+
+#: edd-retroactive-licensing.php:794
+msgid "Licensing Notification Subject"
+msgstr ""
+
+#: edd-retroactive-licensing.php:805
+msgid ""
+"Enter the email contents that is sent for retroactive licensing. HTML is "
+"accepted. Additional template tags:"
+msgstr ""
+
+#: edd-retroactive-licensing.php:806
+msgid "Admin order details URL"
+msgstr ""
+
+#: edd-retroactive-licensing.php:807
+msgid ""
+"Admin order details tag - Automatically prepended to admin notifications"
+msgstr ""
+
+#: edd-retroactive-licensing.php:808
+msgid "Contact page URL"
+msgstr ""
+
+#: edd-retroactive-licensing.php:809
+msgid "Contact page tag"
+msgstr ""
+
+#: edd-retroactive-licensing.php:810
+msgid "Site URL"
+msgstr ""
+
+#: edd-retroactive-licensing.php:811
+msgid "User's orders URL"
+msgstr ""
+
+#: edd-retroactive-licensing.php:812
+msgid "User's orders tag - Automatically prepended to admin notifications"
+msgstr ""
+
+#: edd-retroactive-licensing.php:821
+msgid ""
+"Hello {name},\n"
+"\n"
+"We're sending you a software license for a {date} purchased item from "
+"{sitename} that now requires licensing for use and upgrades.\n"
+"\n"
+"We apologize for the inconvenience of having to set the license, but this "
+"few minute task will continue to ensure that your purchased sofware is the "
+"latest release with bug fixes and new enhancements.\n"
+"\n"
+"In general, to set the license, copy and paste your product's license from "
+"below into the appropriate license key field at WP Admin > Downloads > "
+"Settings, License tab.\n"
+"\n"
+"{license_keys}\n"
+"\n"
+"If you have any questions, please visit {contact} to share them.\n"
+"<hr />\n"
+"<a href=\"{site_url}\">{sitename}</a> appreciates your business."
+msgstr ""
+
+#: edd-retroactive-licensing.php:864
+msgid "View <a href=\"%1$s\">user's orders</a>."
+msgstr ""
+
+#: edd-retroactive-licensing.php:962
+msgid "Retroactive licensing %2$s email sent: \"%1$s\""
+msgstr ""
+
+#: edd-retroactive-licensing.php:974
+msgid "`wp_mail` failed to send"
+msgstr ""
+
+#: edd-retroactive-licensing.php:1025
+msgid "View <a href=\"%1$s\">order details</a>."
 msgstr ""
 
 #: lib/EDD_License_Handler.php:131
