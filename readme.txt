@@ -5,7 +5,7 @@ Donate link: http://aihr.us/about-aihrus/donate/
 Tags: EDD, easy digital downloads, license
 Requires at least: 3.6
 Tested up to: 3.8.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,9 +15,6 @@ Send out license keys to users who bought products through Easy Digital Download
 == Description ==
 
 Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
-
-http://www.youtube.com/watch?v=TBD
-**[Video introduction](http://youtu.be/TBD)**
 
 = Primary Features =
 
@@ -78,7 +75,7 @@ Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zende
 1. Visit WordPress Admin > Downloads > Settings
 1. Configure and save Emails' tab settings
 1. Configure and save Extensons' tab settings
-1. Make sure to enable license provisioning via the checkbox
+1. Make sure to check allowed products and enable license provisioning
 1. Visit WordPress Admin > Downloads > Retroactive Licensing
 1. Click button 'Perform EDD Retroactive Licensing'
 1. Viola, all done!
@@ -94,6 +91,7 @@ Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zende
 1. Easy Digitial Downloads - Retroactive Licensing Processer
 2. Retroactive license created and sent
 3. Licensing provision enabled - WP Admin > Downloads > Settings, Extensions tab
+4. Retroactive Licensing email
 
 
 == Changelog ==

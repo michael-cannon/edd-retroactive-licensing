@@ -1,6 +1,9 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
+
+## 1.1.1
+* Add screenshot 4. Retroactive Licensing email
 * BUGFIX Incorrect expiration date
 * BUGFIX Too many unlicensed product payments queried
 * No payments found helper text
