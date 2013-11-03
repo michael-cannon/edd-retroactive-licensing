@@ -3,6 +3,7 @@
 ## master
 * BUGFIX Incorrect expiration date
 * No payments found helper text
+* Select which products to process retroactive licensing for
 * Verbiage updates
 
 ## 1.1.0

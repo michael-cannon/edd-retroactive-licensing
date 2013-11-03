@@ -170,7 +170,7 @@ class EDD_Retroactive_Licensing {
 			if ( ! $count ) {
 				echo '<h3>' . esc_html__( 'All Done', 'edd-retroactive-licensing' ) . '</h3>';
 				echo '<p>' . esc_html__( 'No purchases needing licenses found.', 'edd-retroactive-licensing' ) . '</p>';
-				echo '<p>' . sprintf( esc_html__( 'In case this wasn\'t expected, are you sure you\'ve enabled license provisioning in %s?', 'edd-retroactive-licensing' ), self::$settings_link ) . '</p>';
+				echo '<p>' . sprintf( esc_html__( 'In case this wasn\'t expected, are you sure you\'ve allowed the products and enabled license provisioning in %s?', 'edd-retroactive-licensing' ), self::$settings_link ) . '</p>';
 				echo '</div>';
 
 				return;
@@ -198,29 +198,11 @@ class EDD_Retroactive_Licensing {
 		$post__in     = array();
 		$post__not_in = array();
 
-		// products with active licensing
-		$product_query = array(
-			'post_status' => 'publish',
-			'post_type' => self::EDD_PT,
-			'posts_per_page' => 1,
-			'meta_query' => array(
-				array(
-					'key' => '_edd_sl_enabled',
-					'value' => 1,
-					'compare' => '=',
-				),
-			),
-		);
-
-		$results  = new WP_Query( $product_query );
-		$query_wp = $results->request;
-		$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
-		$products = $wpdb->get_col( $query_wp );
-		$products = apply_filters( 'eddrl_products', $products );
-
+		$products = self::get_edd_options( 'allowed_products' );
 		if ( empty( $products ) )
 			return;
 
+		$products     = array_keys( $products );
 		$products_csv = implode( ',', $products );
 
 		// licensed payments of those products
@@ -250,7 +232,7 @@ EOD;
 
 		$meta_values = implode( ' OR ', $regexs );
 
-		// payments of those products
+		// payments of enabled products
 		$payment_query = <<<EOD
 			SELECT pm.post_id
 			FROM {$wpdb->postmeta} pm
@@ -738,6 +720,16 @@ EOD;
 				'options' => $pages_options,
 			);
 
+		$products = self::get_licensed_products();
+		if ( ! empty( $products ) )
+			$settings[] = array(
+				'id' => self::SLUG . 'allowed_products',
+				'name' => esc_html__( 'Allowed Products', 'edd-retroactive-licensing' ),
+				'desc' => esc_html__( 'These products have licensing enabled. Check the products you want retroactive licensing to work with.', 'edd-retroactive-licensing' ),
+				'type' => 'multicheck',
+				'options' => $products,
+			);
+
 		$settings[] = array(
 			'id' => self::SLUG . 'initial_header',
 			'name' => '<strong>' . esc_html__( 'License Provisioning', 'edd-retroactive-licensing' ) . '</strong>',
@@ -1031,13 +1023,42 @@ If you have any questions, please visit {contact} to send them.
 	}
 
 
+	public static function get_licensed_products() {
+		global $wpdb;
+
+		$product_query = array(
+			'post_status' => 'publish',
+			'post_type' => self::EDD_PT,
+			'posts_per_page' => 1,
+			'meta_query' => array(
+				array(
+					'key' => '_edd_sl_enabled',
+					'value' => 1,
+					'compare' => '=',
+				),
+			),
+		);
+
+		$results  = new WP_Query( $product_query );
+		$query_wp = $results->request;
+		$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
+		$results  = $wpdb->get_col( $query_wp );
+
+		$products = array();
+		foreach ( $results as $result )
+			$products[ $result ] = get_the_title( $result );
+
+		$products = apply_filters( 'eddrl_products', $products, $as_options );
+
+		return $products;
+	}
 }
 
 
 if ( ! class_exists( 'EDD_License' ) )
 	include_once dirname( __FILE__ ) . '/lib/EDD_License_Handler.php';
 
-$license = new EDD_License( __FILE__, 'EDD Retroactive Licensing', EDD_Retroactive_Licensing::VERSION, 'Michael Cannon' );
+$license = new EDD_License( __FILE__, 'Retroactive Licensing', EDD_Retroactive_Licensing::VERSION, 'Michael Cannon' );
 
 
 register_activation_hook( __FILE__, array( 'EDD_Retroactive_Licensing', 'activation' ) );

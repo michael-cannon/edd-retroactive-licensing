@@ -28,12 +28,14 @@ http://www.youtube.com/watch?v=TBD
 * License provisioning email and configuration options
 * Optional retroactive license processing or not
 * Sends email to product buyer and admin after license generation
+* Select which products to process retroactive licensing for
 
 = Settings Options =
 
 **Extensions**
 
 * Contact Page Link - This is a feedback page for users to contact you.
+* Allowed Products - These products have licensing enabled. Check the products you want retroactive licensing to work with.
 
 **License Provisioning**
 
