@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Easy Digital Downloads - Retroactive Licensing
  * Plugin URI: http://aihr.us/easy-digital-downloads-retroactive-licensing/
- * Description: Send out license keys to users who bought software through Easy Digital Downloads before licensing was enabled.
+ * Description: Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
  * Version: 0.0.1
  * Author: Michael Cannon
  * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
@@ -185,19 +185,13 @@ class EDD_Retroactive_Licensing {
 	public static function get_posts_to_process() {
 		global $wpdb;
 
-		$query = array(
-			'post_status' => array( 'publish', 'edd_subscription' ),
-			'post_type' => self::$post_types,
-			'orderby' => 'post_modified',
-			'order' => 'DESC',
-		);
-
+		$post__in     = array();
 		$post__not_in = array();
 
 		$include_ids = self::get_edd_options( 'payment_ids' );
-		if ( $include_ids ) {
-			$query['post__in'] = str_getcsv( $include_ids );
-		} else {
+		if ( $include_ids )
+			$post__in = array_merge( $post__in, str_getcsv( $include_ids ) );
+		else {
 			// products with active licensing
 			$product_query = array(
 				'post_status' => 'publish',
@@ -216,7 +210,12 @@ class EDD_Retroactive_Licensing {
 			$query_wp = $results->request;
 			$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
 			$products = $wpdb->get_col( $query_wp );
-			$products = implode( ',', $products );
+			$products = apply_filters( 'eddrl_products', $products );
+
+			if ( empty( $products ) )
+				return;
+
+			$products_csv = implode( ',', $products );
 
 			// licensed payments of those products
 			$license_query = <<<EOD
@@ -229,19 +228,54 @@ class EDD_Retroactive_Licensing {
 						FROM {$wpdb->postmeta}
 						WHERE 1 = 1
 							AND meta_key = '_edd_sl_download_id'
-							AND meta_value IN ( $products )
+							AND meta_value IN ( $products_csv )
 					)
 EOD;
 
 			$licenses     = $wpdb->get_col( $license_query );
 			$post__not_in = array_merge( $post__not_in, $licenses );
+
+			$regex  = <<<EOD
+pm.meta_value REGEXP '^.*s:12:"cart_details";.*s:2:"id";s:[[:digit:]]+:"%d";.*$'
+EOD;
+			$regexs = array();
+			foreach ( $products as $product )
+				$regexs[] = sprintf( $regex, $product );
+
+			$meta_values = implode( ' OR ', $regexs );
+
+			// payments of those products
+			$payment_query = <<<EOD
+				SELECT pm.post_id
+				FROM {$wpdb->postmeta} pm
+				WHERE 1 = 1
+					AND pm.meta_key = '_edd_payment_meta'
+					AND ( {$meta_values} )
+EOD;
+
+			$payments = $wpdb->get_col( $payment_query );
+			$post__in = array_merge( $post__in, $payments );
 		}
 
 		$skip_ids = self::get_edd_options( 'skip_payment_ids' );
 		if ( $skip_ids )
 			$post__not_in = array_merge( $post__not_in, str_getcsv( $skip_ids ) );
 
-		if ( ! empty( $post__not_in ) ) {
+		$query = array(
+			'post_status' => array( 'publish', 'edd_subscription' ),
+			'post_type' => self::$post_types,
+			'orderby' => 'post_modified',
+			'order' => 'DESC',
+		);
+
+		if ( ! empty( $post__in ) && ! empty( $post__not_in ) ) {
+			$post__in          = array_diff( $post__in, $post__not_in );
+			$post__in          = array_unique( $post__in );
+			$query['post__in'] = $post__in;
+		} elseif ( ! empty( $post__in ) ) {
+			$post__in          = array_unique( $post__in );
+			$query['post__in'] = $post__in;
+		} elseif ( ! empty( $post__not_in ) ) {
 			$post__not_in          = array_unique( $post__not_in );
 			$query['post__not_in'] = $post__not_in;
 		}
@@ -255,9 +289,10 @@ EOD;
 		else
 			$query_wp = preg_replace( '#\bLIMIT 0,.*#', '', $query_wp );
 
-		$posts = $wpdb->get_col( $query_wp );
+		$payments = $wpdb->get_col( $query_wp );
+		$payments = apply_filters( 'eddrl_payments', $payments );
 
-		return $posts;
+		return $payments;
 	}
 
 
@@ -440,26 +475,40 @@ EOD;
 	public function ajax_process_post() {
 		error_reporting( 0 ); // Don't break the JSON result
 		header( 'Content-type: application/json' );
-		$this->post_id = intval( $_REQUEST['id'] );
 
-		$post = get_post( $this->post_id );
+		$post_id = intval( $_REQUEST['id'] );
+		$post    = get_post( $post_id );
+
 		if ( ! $post || ! in_array( $post->post_type, self::$post_types )  )
-			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $this->post_id ) ) ) ) );
+			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $post_id ) ) ) ) );
 
-		$this->do_something( $this->post_id, $post );
-
-		die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully processed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $this->post_id ), esc_html( get_the_title( $this->post_id ) ), $this->post_id, timer_stop() ) ) ) );
+		$success = self::generate_licensing( $post_id, $post );
+		if ( $succes )
+			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully licensed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $post_id ), esc_html( get_the_title( $post_id ) ), $post_id, timer_stop() ) ) ) );
+		else
+			die( json_encode( array( 'error' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was NOT licensed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $post_id ), esc_html( get_the_title( $post_id ) ), $post_id, timer_stop() ) ) ) );
 	}
 
 
-	/**
-	 *
-	 *
-	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-	 */
-	public function do_something( $post_id, $post ) {
-		// do something there with the post
-		// use error_log to track happenings
+	public static function generate_license_keys( $payment_id ) {
+		$payment_id = absint( $payment_id );
+		if( empty( $payment_id ) )
+			return;
+
+		$downloads = edd_get_payment_meta_downloads( $payment_id );
+		if( empty( $downloads ) )
+			return;
+
+		$license_length = apply_filters( 'edd_sl_license_exp_length', '+1 year', $payment_id, 0, 0 );
+		$payment_date   = get_post_field( 'post_date', $payment_id );
+		$expiration     = strtotime( $license_length, strtotime( $payment_date ) );
+
+		foreach( $downloads as $download ) {
+			$type = edd_get_download_type( $download['id'] );
+			edd_software_licensing()->generate_license( $download['id'], $payment_id, $type, $expiration );
+		}
+
+		return true;
 	}
 
 
@@ -667,6 +716,20 @@ EOD;
 		$link      = add_query_arg( 'id', $payment_id, $link_base );
 
 		return $link;
+	}
+
+
+	/**
+	 *
+	 *
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+	 */
+	public static function generate_licensing( $post_id, $post ) {
+		$licensed = self::generate_license_keys( $post_id );
+		if ( ! $licensed )
+			return;
+
+		return true;
 	}
 
 

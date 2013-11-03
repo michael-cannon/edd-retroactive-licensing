@@ -1,15 +1,19 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
+* Add API filter eddrl_payments
+* Add API filter eddrl_products
 * Add email settings link
-* Begin selecting payments for processing
 * Enable activation and version checking
+* License product payments
 * Link to order details during processing
 * Move processor to Downloads menu section
 * Remove donate links
 * Removed unused EDD_Retroactive_Licensing_Settings
-* Select product payments without licenses that need licenses
+* Select unlicensed product payments for processing
+* Update TODO
 * Update description
+* Update readme
 * Use `get_edd_options` and `set_edd_options` methods
 * Verbiage updates
 

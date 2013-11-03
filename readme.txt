@@ -2,57 +2,31 @@
 
 Contributors: comprock
 Donate link: http://aihr.us/about-aihrus/donate/
-Tags: t, b, d
-Requires at least: 3.5
+Tags: EDD, easy digital downloads, license
+Requires at least: 3.6
 Tested up to: 3.8.0
 Stable tag: 0.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Send out license keys to users who bought software through Easy Digital Downloads before licensing was enabled.
+Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
 
 
 == Description ==
 
-Send out license keys to users who bought software through Easy Digital Downloads before licensing was enabled.
-
-EDD Retroactive Licensing Premium adds onto the best WordPress KEYWORD plugin there is, [EDD Retroactive Licensing](http://aihr.us/easy-digital-downloads-retroactive-licensing/). EDD Retroactive Licensing Premium offers [PREMIUM_FEATURES](http://aihr.us/downloads/). Additionally, SECONDARY_FEATURES.
+Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
 
 [youtube http://www.youtube.com/watch?v=TBD]
 **[Video introduction](http://youtu.be/TBD)**
-
-The WordPress KEYWORD plugin, EDD Retroactive Licensing, FREE_DESCRIPTION.
 
 = Primary Features =
 
 * Ajax based processing screen
 * API
-* Settings export/import
-* Settings screen
 
 = Settings Options =
 
-**General**
-
-* Enable Paging? - For `[eddrl_widget_list]`
-	* Disable – Don't display paging
-	* Enable – display paging before and after post entries
-	* Before – display paging only before post entries
-	* After – display paging only after post entries
-
-**Testing**
-
-* Debug Mode - Bypass Ajax controller to handle posts_to_import directly for testing purposes.
-* Posts to Import - A CSV list of post ids to import, like '1,2,3'.
-* Skip Importing Posts - A CSV list of post ids to not import, like '1,2,3'.
-* Import Limit - Useful for testing import on a limited amount of posts. 0 or blank means unlimited.
-
-**Compatibility & Reset**
-
-* Export Settings – These are your current settings in a serialized format. Copy the contents to make a backup of your settings.
-* Import Settings – Paste new serialized settings here to overwrite your current configuration.
-* Remove Plugin Data on Deletion? - Delete all EDD Retroactive Licensing data and options from database on plugin deletion
-* Reset to Defaults? – Check this box to reset options to their defaults
+**TBD**
 
 = API =
 
@@ -68,8 +42,6 @@ See the FAQ for further localization tips.
 
 Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zendesk.com/categories/20133716-Easy-Digital-Downloads-Retroactive-Licensing) for frequently asked questions, offering ideas, or getting support.
 
-If you want to contribute and I hope you do, visit the [EDD Retroactive Licensing Github repository](https://github.com/michael-cannon/edd-retroactive-licensing).
-
 
 == Installation ==
 
@@ -77,6 +49,12 @@ If you want to contribute and I hope you do, visit the [EDD Retroactive Licensin
 1. Alternately, unzip `edd-retroactive-licensing.zip` the file and then via FTP, upload `edd-retroactive-licensing` directory to the `/wp-content/plugins/` directory
 1. Activate the 'EDD Retroactive Licensing' plugin after uploading or through WP Admin > Plugins
 1. Set the license key via WP Admin > Downloads > Settings, Licenses tab
+
+= Usage =
+
+1. Visit WordPress Admin > Downloads > Retroactive Licensing,
+1. Click button 'Perform EDD Retroactive Licensing'
+1. Viola, all done!
 
 
 == Frequently Asked Questions ==
@@ -113,4 +91,4 @@ Beta testers benefit directly with latest versions, a free 1-site license for ED
 
 == TODO ==
 
-See [TODO](https://github.com/michael-cannon/edd-retroactive-licensing/blob/master/TODO.md)
+See [TODO](http://aihr.us/easy-digital-downloads-retroactive-licensing/todo/)

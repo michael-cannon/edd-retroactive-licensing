@@ -8,10 +8,6 @@ The [EDD Retroactive Licensing plugin](http://wordpress.org/plugins/edd-retroact
 
 	Update helper.
 		
-* `eddrl_settings_add_help_tabs`
-
-	Customize settings page help tabs.
-
 * `eddrl_styles`
 
 	Styles tie-in.
@@ -22,21 +18,13 @@ The [EDD Retroactive Licensing plugin](http://wordpress.org/plugins/edd-retroact
 
 ## Filters
 
-* `eddrl_validate_settings`
+* `eddrl_payments`
 
-	Validate settings helper. [example](https://gist.github.com/michael-cannon/5833768)
+	Adjust allowed payments for retroactive licensing.
 
-* `eddrl_version`
+* `eddrl_products`
 
-	Version tracking for settings. [example](https://gist.github.com/michael-cannon/5833774)
-
-* `eddrl_sections`
-
-	Alter section options. [example](https://gist.github.com/michael-cannon/5833757)
-
-* `eddrl_settings`
-
-	Alter setting options. [example](https://gist.github.com/michael-cannon/5833757)
+	Adjust allowed products for retroactive licensing.
 
 ## Need More?
 

@@ -3,5 +3,6 @@
 Is there something you want done? Write it up on the [support forums](http://wordpress.org/support/plugin/edd-retroactive-licensing) and then [donate](http://aihr.us/about-aihrus/donate/) or [write an awesome testimonial](http://aihr.us/about-aihrus/testimonials/add-testimonial/).
 
 * Check that Software Licensing plugin is installed and activated
-* Send reminders to activate licensing
 * Limit to which products to process retroactive licensing for
+* Send notification emails of license generation
+* Send reminders to activate licensing
