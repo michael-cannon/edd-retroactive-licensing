@@ -1,6 +1,8 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
+
+## 1.0.0
 * Add API filter eddrl_payments
 * Add API filter eddrl_products
 * Add email settings link

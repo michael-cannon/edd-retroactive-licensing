@@ -3,7 +3,7 @@
  * Plugin Name: Easy Digital Downloads - Retroactive Licensing
  * Plugin URI: http://aihr.us/easy-digital-downloads-retroactive-licensing/
  * Description: Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
- * Version: 0.0.1
+ * Version: 1.0.0
  * Author: Michael Cannon
  * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
  * License: GPLv2 or later
@@ -34,7 +34,7 @@ class EDD_Retroactive_Licensing {
 	const REQUIRED_EDD_VERSION   = '1.8.2.1';
 	const REQUIRED_EDDSL_VERSION = '2.1';
 	const SLUG                   = 'eddrl_';
-	const VERSION                = '0.0.1';
+	const VERSION                = '1.0.0';
 
 	private static $base;
 	private static $post_types;
@@ -510,15 +510,6 @@ EOD;
 	}
 
 
-	public function admin_notices_0_0_1() {
-		$content  = '<div class="updated fade"><p>';
-		$content .= sprintf( __( 'If your EDD Retroactive Licensing display has gone to funky town, please <a href="%s">read the FAQ</a> about possible CSS fixes.', 'edd-retroactive-licensing' ), 'https://aihrus.zendesk.com/entries/23722573-Major-Changes-Since-2-10-0' );
-		$content .= '</p></div>';
-
-		echo $content;
-	}
-
-
 	public static function scripts() {
 		if ( is_admin() ) {
 			wp_enqueue_script( 'jquery' );
@@ -597,9 +588,6 @@ EOD;
 		// never going to fire because version isn't set at this point
 		$prior_version = self::get_edd_options( 'version' );
 		if ( $good_version && $prior_version ) {
-			if ( $prior_version < '0.0.1' )
-				add_action( 'admin_notices', array( $this, 'admin_notices_0_0_1' ) );
-
 			if ( $prior_version < self::VERSION ) {
 				do_action( 'eddrl_update' );
 				self::set_edd_options( self::SLUG . 'version', self::VERSION );
