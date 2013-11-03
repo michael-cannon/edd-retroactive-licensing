@@ -62,8 +62,8 @@ class EDD_Retroactive_Licensing {
 
 		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 
-		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings' ) . '</a>';
-		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails' ) . '</a>';
+		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings', 'edd-retroactive-licensing' ) . '</a>';
+		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails', 'edd-retroactive-licensing' ) . '</a>';
 	}
 
 
@@ -125,8 +125,6 @@ class EDD_Retroactive_Licensing {
 	public function uninstall() {
 		if ( ! current_user_can( 'activate_plugins' ) )
 			return;
-
-		global $wpdb;
 	}
 
 
@@ -483,7 +481,7 @@ EOD;
 			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $post_id ) ) ) ) );
 
 		$success = self::generate_licensing( $post_id, $post );
-		if ( $succes )
+		if ( $success )
 			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully licensed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $post_id ), esc_html( get_the_title( $post_id ) ), $post_id, timer_stop() ) ) ) );
 		else
 			die( json_encode( array( 'error' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was NOT licensed in %4$s seconds.', 'edd-retroactive-licensing' ), self::get_order_url( $post_id ), esc_html( get_the_title( $post_id ) ), $post_id, timer_stop() ) ) ) );
@@ -492,18 +490,18 @@ EOD;
 
 	public static function generate_license_keys( $payment_id ) {
 		$payment_id = absint( $payment_id );
-		if( empty( $payment_id ) )
+		if ( empty( $payment_id ) )
 			return;
 
 		$downloads = edd_get_payment_meta_downloads( $payment_id );
-		if( empty( $downloads ) )
+		if ( empty( $downloads ) )
 			return;
 
 		$license_length = apply_filters( 'edd_sl_license_exp_length', '+1 year', $payment_id, 0, 0 );
 		$payment_date   = get_post_field( 'post_date', $payment_id );
 		$expiration     = strtotime( $license_length, strtotime( $payment_date ) );
 
-		foreach( $downloads as $download ) {
+		foreach ( $downloads as $download ) {
 			$type = edd_get_download_type( $download['id'] );
 			edd_software_licensing()->generate_license( $download['id'], $payment_id, $type, $expiration );
 		}
@@ -548,20 +546,20 @@ EOD;
 		$is_active = is_plugin_active( self::EDD_PLUGIN_FILE );
 
 		if ( $is_active ) {
-			$link = sprintf( __( '<a href="%1$s">update to</a>' ), self_admin_url( 'update-core.php' ) );
+			$link = sprintf( __( '<a href="%1$s">update to</a>', 'edd-retroactive-licensing' ), self_admin_url( 'update-core.php' ) );
 		} else {
 			$plugins = get_plugins();
 			if ( empty( $plugins[ self::EDD_PLUGIN_FILE ] ) ) {
 				$install = esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $edd_slug ), 'install-plugin_' . $edd_slug ) );
-				$link    = sprintf( __( '<a href="%1$s">install</a>' ), $install );
+				$link    = sprintf( __( '<a href="%1$s">install</a>', 'edd-retroactive-licensing' ), $install );
 			} else {
 				$activate = esc_url( wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . self::EDD_PLUGIN_FILE ), 'activate-plugin_' . self::EDD_PLUGIN_FILE ) );
-				$link     = sprintf( __( '<a href="%1$s">activate</a>' ), $activate );
+				$link     = sprintf( __( '<a href="%1$s">activate</a>', 'edd-retroactive-licensing' ), $activate );
 			}
 		}
 
 		$content  = '<div class="error"><p>';
-		$content .= sprintf( __( 'Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales version %2$s or newer before activating %3$s.' ), $link, self::REQUIRED_EDD_VERSION, 'EDD Retroactive Licensing' );
+		$content .= sprintf( __( 'Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales version %2$s or newer before activating %3$s.', 'edd-retroactive-licensing' ), $link, self::REQUIRED_EDD_VERSION, 'EDD Retroactive Licensing' );
 		$content .= '</p></div>';
 
 		echo $content;
@@ -644,14 +642,14 @@ EOD;
 		$plugins = get_plugins();
 		if ( empty( $plugins[ self::EDDSL_PLUGIN_FILE ] ) ) {
 			$install = esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $eddsl_slug ), 'install-plugin_' . $eddsl_slug ) );
-			$link    = sprintf( __( '<a href="%1$s">install</a>' ), $install );
+			$link    = sprintf( __( '<a href="%1$s">install</a>', 'edd-retroactive-licensing' ), $install );
 		} else {
 			$activate = esc_url( wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . self::EDDSL_PLUGIN_FILE ), 'activate-plugin_' . self::EDDSL_PLUGIN_FILE ) );
-			$link     = sprintf( __( '<a href="%1$s">activate</a>' ), $activate );
+			$link     = sprintf( __( '<a href="%1$s">activate</a>', 'edd-retroactive-licensing' ), $activate );
 		}
 
 		$content  = '<div class="error"><p>';
-		$content .= sprintf( __( 'Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales - Software Licenses version %2$s or newer before activating %3$s.' ), $link, self::REQUIRED_EDDSL_VERSION, 'EDD Retroactive Licensing' );
+		$content .= sprintf( __( 'Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales - Software Licenses version %2$s or newer before activating %3$s.', 'edd-retroactive-licensing' ), $link, self::REQUIRED_EDDSL_VERSION, 'EDD Retroactive Licensing' );
 		$content .= '</p></div>';
 
 		echo $content;
@@ -692,7 +690,7 @@ EOD;
 		if ( false === $notices )
 			return;
 
-		foreach ( $notices as $key => $notice )
+		foreach ( $notices as $notice )
 			add_action( 'admin_notices', array( 'EDD_Retroactive_Licensing', $notice ) );
 
 		self::clear_notices();

@@ -13,6 +13,7 @@
 * Select unlicensed product payments for processing
 * Update TODO
 * Update description
+* Update pot
 * Update readme
 * Use `get_edd_options` and `set_edd_options` methods
 * Verbiage updates

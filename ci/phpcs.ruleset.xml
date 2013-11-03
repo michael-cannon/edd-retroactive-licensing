@@ -4,6 +4,8 @@
 		Custom phpcs rules to check for Aihrus' WordPress projects
 	</description>
 
+	<exclude-pattern>lib/EDD_License_Handler.php</exclude-pattern>
+	<exclude-pattern>lib/EDD_SL_Plugin_Updater.php</exclude-pattern>
 	<exclude-pattern>lib/screen-meta-links.php</exclude-pattern>
 
 	<rule ref="Generic">
@@ -28,6 +30,6 @@
 	</rule>
 
 	<rule ref="WordPress">
-		<xexclude name="WordPress.XSS.EscapeOutput" />
+		<exclude name="WordPress.XSS.EscapeOutput" />
 	</rule>
 </ruleset>

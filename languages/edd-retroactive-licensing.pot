@@ -1,10 +1,10 @@
-# Copyright (C) 2013 WordPress Starter
-# This file is distributed under the same license as the WordPress Starter package.
+# Copyright (C) 2013 Easy Digital Downloads - Retroactive Licensing
+# This file is distributed under the same license as the Easy Digital Downloads - Retroactive Licensing package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WordPress Starter 0.0.1\n"
-"Report-Msgid-Bugs-To: http://wordpress.org/tag/wordpress-starter\n"
-"POT-Creation-Date: 2013-09-21 23:41:52+00:00\n"
+"Project-Id-Version: Easy Digital Downloads - Retroactive Licensing 0.0.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/edd-retroactive-licensing\n"
+"POT-Creation-Date: 2013-11-03 02:07:36+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,306 +12,185 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: lib/class-wordpress-starter-settings.php:83
-#: lib/class-wordpress-starter-settings.php:315 wordpress-starter.php:73
-msgid "WordPress Starter Settings"
-msgstr ""
-
-#. #-#-#-#-#  wordpress-starter.pot (WordPress Starter 0.0.1)  #-#-#-#-#
-#. Plugin Name of the plugin/theme
-#: lib/class-wordpress-starter-settings.php:83
-msgid "WordPress Starter"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:91 wordpress-starter.php:66
-#: wordpress-starter.php:167
-msgid "WordPress Starter Processer"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:119
-#: lib/class-wordpress-starter-settings.php:816
-msgid "General"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:120
-msgid "Testing"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:121
-msgid "Compatibility & Reset"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:122
-msgid "About WordPress Starter"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:136
-msgid "Enable Paging?"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:137
-msgid "For `[wps_widget_list]`"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:140
-msgid "Disable"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:141
-msgid "Enable"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:142
-msgid "Before wps"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:143
-msgid "After wps"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:150
-msgid "URL slug-name for <a href=\"%1s\">wps archive</a> page."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:156
-msgid "Archive Page URL"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:166
-msgid "Debug Mode?"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:167
-msgid ""
-"Bypass Ajax controller to handle posts_to_import directly for testing "
-"purposes."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:173
-msgid "Posts to Import"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:174
-msgid "A CSV list of post ids to import, like '1,2,3'."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:182
-msgid "Skip Importing Posts"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:183
-msgid "A CSV list of post ids to not import, like '1,2,3'."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:191
-msgid "Import Limit"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:192
-msgid ""
-"Useful for testing import on a limited amount of posts. 0 or blank means "
-"unlimited."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:207
-msgid "Export Settings"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:209
-msgid ""
-"These are your current settings in a serialized format. Copy the contents to "
-"make a backup of your settings."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:217
-msgid "Import Settings"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:219
-msgid ""
-"Paste new serialized settings here to overwrite your current configuration."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:225
-msgid "Remove Plugin Data on Deletion?"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:228
-msgid ""
-"Delete all WordPress Starter data and options from database on plugin "
-"deletion"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:234
-msgid "Reset to Defaults?"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:237
-msgid "Check this box to reset options to their defaults"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:332
-msgid "Save Changes"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:341
-msgid ""
-"If you like this plugin, please <a href=\"%1$s\" title=\"Donate for Good "
-"Karma\"><img src=\"%2$s\" border=\"0\" alt=\"Donate for Good Karma\" /></a> "
-"or <a href=\"%3$s\" title=\"purchase WordPress Starter Premium\">purchase "
-"WordPress Starter Premium</a> to help fund further development and <a href="
-"\"%4$s\" title=\"Support forums\">support</a>."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:352
-msgid "Copyright &copy;%1$s <a href=\"%2$s\">Aihrus</a>."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:714
-msgid "Required"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:803
-msgid "For more information:"
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:804
-msgid ""
-"These WordPress Starter Settings establish the default option values for "
-"shortcodes, theme functions, and widget instances."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:807
-msgid "View the <a href=\"%s\">WordPress Starter documentation</a>."
-msgstr ""
-
-#: lib/class-wordpress-starter-settings.php:817
-msgid "Show or hide optional fields."
-msgstr ""
-
-#: wordpress-starter.php:61
+#: edd-retroactive-licensing.php:65
 msgid "Settings"
 msgstr ""
 
-#: wordpress-starter.php:92
+#: edd-retroactive-licensing.php:66
+msgid "Emails"
+msgstr ""
+
+#: edd-retroactive-licensing.php:71
+msgid "EDD Retroactive Licensing Processer"
+msgstr ""
+
+#: edd-retroactive-licensing.php:71
+msgid "Retroactive Licensing"
+msgstr ""
+
+#: edd-retroactive-licensing.php:91
 msgid "Process"
 msgstr ""
 
-#: wordpress-starter.php:159
+#: edd-retroactive-licensing.php:140
 msgid "Your user account doesn't have permission to access this."
 msgstr ""
 
-#: wordpress-starter.php:196
-msgid "All done. No posts needing processing found."
+#: edd-retroactive-licensing.php:148
+msgid "Easy Digitial Downloads - Retroactive Licensing Processer"
 msgstr ""
 
-#: wordpress-starter.php:261
-msgid "Use this tool to process posts for TBD."
+#: edd-retroactive-licensing.php:167
+msgid "All done. No purchases needing licenses found."
 msgstr ""
 
-#: wordpress-starter.php:263
+#: edd-retroactive-licensing.php:302
+msgid ""
+"Use this tool to provision licenses for unlicensed Easy Digital Downloads "
+"products."
+msgstr ""
+
+#: edd-retroactive-licensing.php:304
 msgid ""
 "This processing is not reversible. Backup your database beforehand or be "
 "prepared to revert each transformmed post manually."
 msgstr ""
 
-#: wordpress-starter.php:265
+#: edd-retroactive-licensing.php:306
 msgid "Please review your %s before proceeding."
 msgstr ""
 
-#: wordpress-starter.php:267
+#: edd-retroactive-licensing.php:308
 msgid "To begin, just press the button below."
 msgstr ""
 
-#: wordpress-starter.php:269
-msgid "Process WordPress Starter"
+#: edd-retroactive-licensing.php:310
+msgid "Perform EDD Retroactive Licensing"
 msgstr ""
 
-#: wordpress-starter.php:271 wordpress-starter.php:295
+#: edd-retroactive-licensing.php:312 edd-retroactive-licensing.php:336
 msgid "You must enable Javascript in order to proceed!"
 msgstr ""
 
-#: wordpress-starter.php:284
+#: edd-retroactive-licensing.php:325
 msgid ""
 "Please be patient while this script run. This can take a while, up to a "
 "minute per post. Do not navigate away from this page until this script is "
-"done or the import will not be completed. You will be notified via this page "
-"when the import is completed."
+"done or the licensing will not be completed. You will be notified via this "
+"page when the licensing is completed."
 msgstr ""
 
-#: wordpress-starter.php:286
-msgid "Estimated time required to import is %1$s minutes."
+#: edd-retroactive-licensing.php:327
+msgid "Estimated time required to send licenses is %1$s minutes."
 msgstr ""
 
-#: wordpress-starter.php:288
+#: edd-retroactive-licensing.php:329
 msgid "To go back to the previous page, <a href=\"%s\">click here</a>."
 msgstr ""
 
-#: wordpress-starter.php:290
+#: edd-retroactive-licensing.php:331
 msgid ""
 "All done! %1$s posts were successfully processed in %2$s seconds and there "
 "were %3$s failures. To try importing the failed posts again, <a href=\"%4$s"
 "\">click here</a>. %5$s"
 msgstr ""
 
-#: wordpress-starter.php:292
+#: edd-retroactive-licensing.php:333
 msgid ""
 "All done! %1$s posts were successfully processed in %2$s seconds and there "
 "were no failures. %3$s"
 msgstr ""
 
-#: wordpress-starter.php:301
-msgid "Abort Processing Posts"
+#: edd-retroactive-licensing.php:342
+msgid "Abort Licensing Posts"
 msgstr ""
 
-#: wordpress-starter.php:303
-msgid "Debugging Information"
+#: edd-retroactive-licensing.php:344
+msgid "Status"
 msgstr ""
 
-#: wordpress-starter.php:306
-msgid "Total Postss: %s"
+#: edd-retroactive-licensing.php:347
+msgid "Total Payments: %s"
 msgstr ""
 
-#: wordpress-starter.php:307
-msgid "Posts Processed: %s"
+#: edd-retroactive-licensing.php:348
+msgid "Payments Processed: %s"
 msgstr ""
 
-#: wordpress-starter.php:308
-msgid "Process Failures: %s"
+#: edd-retroactive-licensing.php:349
+msgid "License Failures: %s"
 msgstr ""
 
-#: wordpress-starter.php:339
+#: edd-retroactive-licensing.php:380
 msgid "Stopping, please wait a moment."
 msgstr ""
 
-#: wordpress-starter.php:441
-msgid "Failed Processing: %s is incorrect post type."
+#: edd-retroactive-licensing.php:481
+msgid "Failed Licensing: %s is incorrect post type."
 msgstr ""
 
-#: wordpress-starter.php:445
+#: edd-retroactive-licensing.php:485
 msgid ""
-"&quot;<a href=\"%1$s\" target=\"_blank\">%2$s</a>&quot; Post ID %3$s was "
-"successfully processed in %4$s seconds."
+"&quot;<a href=\"%1$s\" target=\"_blank\">%2$s</a>&quot; Payment ID %3$s was "
+"successfully licensed in %4$s seconds."
 msgstr ""
 
-#: wordpress-starter.php:462
+#: edd-retroactive-licensing.php:487
 msgid ""
-"If your WordPress Starter display has gone to funky town, please <a href=\"%s"
-"\">read the FAQ</a> about possible CSS fixes."
+"&quot;<a href=\"%1$s\" target=\"_blank\">%2$s</a>&quot; Payment ID %3$s was "
+"NOT licensed in %4$s seconds."
 msgstr ""
 
-#: wordpress-starter.php:471
+#: edd-retroactive-licensing.php:515
 msgid ""
-"Please donate $2 towards development and support of this WordPress Starter "
-"plugin. %s"
+"If your EDD Retroactive Licensing display has gone to funky town, please <a "
+"href=\"%s\">read the FAQ</a> about possible CSS fixes."
+msgstr ""
+
+#: edd-retroactive-licensing.php:549
+msgid "<a href=\"%1$s\">update to</a>"
+msgstr ""
+
+#: edd-retroactive-licensing.php:554 edd-retroactive-licensing.php:645
+msgid "<a href=\"%1$s\">install</a>"
+msgstr ""
+
+#: edd-retroactive-licensing.php:557 edd-retroactive-licensing.php:648
+msgid "<a href=\"%1$s\">activate</a>"
+msgstr ""
+
+#: edd-retroactive-licensing.php:562
+msgid ""
+"Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales version "
+"%2$s or newer before activating %3$s."
+msgstr ""
+
+#: edd-retroactive-licensing.php:652
+msgid ""
+"Plugin %3$s has been deactivated. Please %1$s Easy Digital Sales - Software "
+"Licenses version %2$s or newer before activating %3$s."
+msgstr ""
+
+#: lib/EDD_License_Handler.php:131
+msgid "%1$s License Key"
+msgstr ""
+
+#: lib/EDD_License_Handler.php:264
+msgid "Deactivate License"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Easy Digital Downloads - Retroactive Licensing"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "http://wordpress.org/extend/plugins/wordpress-starter/"
+msgid "http://aihr.us/easy-digital-downloads-retroactive-licensing/"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "TBD"
+msgid ""
+"Send out license keys to users who bought products through Easy Digital "
+"Downloads before software licensing was enabled."
 msgstr ""
 
 #. Author of the plugin/theme
