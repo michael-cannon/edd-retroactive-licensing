@@ -2,6 +2,7 @@
 
 ## master
 * BUGFIX Incorrect expiration date
+* BUGFIX Too many unlicensed product payments queried
 * No payments found helper text
 * Select which products to process retroactive licensing for
 * Verbiage updates

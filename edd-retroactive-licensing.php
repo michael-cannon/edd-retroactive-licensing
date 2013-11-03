@@ -223,26 +223,18 @@ EOD;
 		$licenses     = $wpdb->get_col( $license_query );
 		$post__not_in = array_merge( $post__not_in, $licenses );
 
-		$regex  = <<<EOD
-pm.meta_value REGEXP '^.*s:12:"cart_details";.*s:2:"id";s:[[:digit:]]+:"%d";.*$'
-EOD;
-		$regexs = array();
-		foreach ( $products as $product )
-			$regexs[] = sprintf( $regex, $product );
+		foreach ( $products as $product ) {
+			$args  = array(
+				'download' => $product,
+				'number' => -1,
+		   	);
+			$query = new EDD_Payments_Query( $args );
 
-		$meta_values = implode( ' OR ', $regexs );
+			$payments = $query->get_payments();
 
-		// payments of enabled products
-		$payment_query = <<<EOD
-			SELECT pm.post_id
-			FROM {$wpdb->postmeta} pm
-			WHERE 1 = 1
-				AND pm.meta_key = '_edd_payment_meta'
-				AND ( {$meta_values} )
-EOD;
-
-		$payments = $wpdb->get_col( $payment_query );
-		$post__in = array_merge( $post__in, $payments );
+			foreach ( $payments as $payment )
+				$post__in[] = $payment->ID;
+		}
 
 		$query = array(
 			'post_status' => array( 'publish', 'edd_subscription' ),
@@ -1048,7 +1040,7 @@ If you have any questions, please visit {contact} to send them.
 		foreach ( $results as $result )
 			$products[ $result ] = get_the_title( $result );
 
-		$products = apply_filters( 'eddrl_products', $products, $as_options );
+		$products = apply_filters( 'eddrl_products', $products );
 
 		return $products;
 	}
