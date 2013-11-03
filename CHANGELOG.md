@@ -1,6 +1,7 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
+* Update screenshot 3
 
 ## 1.1.1
 * Add screenshot 4. Retroactive Licensing email
