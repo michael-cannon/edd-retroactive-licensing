@@ -168,7 +168,11 @@ class EDD_Retroactive_Licensing {
 
 			$count = count( $posts );
 			if ( ! $count ) {
-				echo '	<p>' . _e( 'All done. No purchases needing licenses found.', 'edd-retroactive-licensing' ) . '</p></div>';
+				echo '<h3>' . esc_html__( 'All Done', 'edd-retroactive-licensing' ) . '</h3>';
+				echo '<p>' . esc_html__( 'No purchases needing licenses found.', 'edd-retroactive-licensing' ) . '</p>';
+				echo '<p>' . sprintf( esc_html__( 'In case this wasn\'t expected, are you sure you\'ve enabled license provisioning in %s?', 'edd-retroactive-licensing' ), self::$settings_link ) . '</p>';
+				echo '</div>';
+
 				return;
 			}
 
@@ -474,7 +478,7 @@ EOD;
 		if ( ! $post || ! in_array( $post->post_type, self::$post_types )  )
 			die( json_encode( array( 'error' => sprintf( esc_html__( 'Failed Licensing: %s is incorrect post type.', 'edd-retroactive-licensing' ), esc_html( $payment_id ) ) ) ) );
 
-		$success = self::generate_licensing( $payment_id, $post );
+		$success = self::handle_licensing( $payment_id, $post );
 		if ( true === $success )
 			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully licensed.', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id ) ) ) );
 		else
@@ -491,13 +495,9 @@ EOD;
 		if ( empty( $downloads ) )
 			return esc_html__( 'No payment downloads found', 'edd-retroactive-licensing' );
 
-		$license_length = apply_filters( 'edd_sl_license_exp_length', '+1 year', $payment_id, 0, 0 );
-		$payment_date   = get_post_field( 'post_date', $payment_id );
-		$expiration     = strtotime( $license_length, strtotime( $payment_date ) );
-
 		foreach ( $downloads as $download ) {
 			$type = edd_get_download_type( $download['id'] );
-			edd_software_licensing()->generate_license( $download['id'], $payment_id, $type, $expiration );
+			edd_software_licensing()->generate_license( $download['id'], $payment_id, $type );
 		}
 
 		return true;
@@ -704,12 +704,13 @@ EOD;
 	 *
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
-	public static function generate_licensing( $payment_id, $post ) {
+	public static function handle_licensing( $payment_id, $post ) {
+		$stage = 'initial';
+
 		$licensed = self::generate_license_keys( $payment_id );
 		if ( true !== $licensed )
 			return $licensed;
 
-		$stage   = 'initial';
 		$emailed = self::send_email( $payment_id, $stage );
 
 		return $emailed;
@@ -802,7 +803,7 @@ EOD;
 
 	public function template_tags() {
 		$tags   = array();
-		$tags[] = esc_html__( 'Enter the email contents that is sent for retroactive licensing. HTML is accepted. Additional template tags:', 'edd-retroactive-licensing' );
+		$tags[] = esc_html__( 'Enter the email contents that is sent for retroactive licensing. HTML is accepted. Additional EDD template tags:', 'edd-retroactive-licensing' );
 		$tags[] = '{admin_order_details_url} - ' . esc_html__( 'Admin order details URL', 'edd-retroactive-licensing' );
 		$tags[] = '{admin_order_details} - ' . esc_html__( 'Admin order details tag - Automatically prepended to admin notifications', 'edd-retroactive-licensing' );
 		$tags[] = '{contact_url} - ' . esc_html__( 'Contact page URL', 'edd-retroactive-licensing' );
@@ -829,7 +830,7 @@ In general, to set the license, copy and paste your product\'s license from belo
 
 {license_keys}
 
-If you have any questions, please visit {contact} to share them.
+If you have any questions, please visit {contact} to send them.
 <hr />
 <a href="{site_url}">{sitename}</a> appreciates your business.',
 			'edd-retroactive-licensing'
@@ -969,7 +970,7 @@ If you have any questions, please visit {contact} to share them.
 				wp_mail( $to, $admin_subject, $email_body, $headers );
 			}
 
-			do_action( 'eddrl_post_licensing', $payment_id );
+			do_action( 'eddrl_post_licensing', $payment_id, $stage );
 		} else
 			return esc_html__( '`wp_mail` failed to send', 'edd-retroactive-licensing' );
 

@@ -1,6 +1,9 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
+* BUGFIX Incorrect expiration date
+* No payments found helper text
+* Verbiage updates
 
 ## 1.1.0
 * Add API action eddrl_post_licensing
