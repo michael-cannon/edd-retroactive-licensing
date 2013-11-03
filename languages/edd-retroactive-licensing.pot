@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Easy Digital Downloads - Retroactive Licensing package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Easy Digital Downloads - Retroactive Licensing 1.0.0\n"
+"Project-Id-Version: Easy Digital Downloads - Retroactive Licensing 1.1.0\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/edd-retroactive-licensing\n"
-"POT-Creation-Date: 2013-11-03 05:39:18+00:00\n"
+"POT-Creation-Date: 2013-11-03 06:05:01+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
