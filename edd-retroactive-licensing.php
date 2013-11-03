@@ -227,7 +227,7 @@ EOD;
 			$args  = array(
 				'download' => $product,
 				'number' => -1,
-		   	);
+			);
 			$query = new EDD_Payments_Query( $args );
 
 			$payments = $query->get_payments();
@@ -1044,6 +1044,8 @@ If you have any questions, please visit {contact} to send them.
 
 		return $products;
 	}
+
+
 }
 
 
