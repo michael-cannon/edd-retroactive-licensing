@@ -1,6 +1,9 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
+* Add Screenshot 5. Email settings - Retroactive Licensing for Easy Digital Downloads
+* Add Screenshot 6. License entry - Retroactive Licensing for Easy Digital Downloads
+* Add Screenshot 7. Plugin entry - Retroactive Licensing for Easy Digital Downloads
 * Update screenshot 3
 
 ## 1.1.1

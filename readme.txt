@@ -92,6 +92,9 @@ Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zende
 2. Retroactive license created and sent
 3. Licensing provision enabled - WP Admin > Downloads > Settings, Extensions tab
 4. Retroactive Licensing email
+5. Email settings - Retroactive Licensing for Easy Digital Downloads
+6. License entry - Retroactive Licensing for Easy Digital Downloads
+7. Plugin entry - Retroactive Licensing for Easy Digital Downloads
 
 
 == Changelog ==
