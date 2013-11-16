@@ -3,7 +3,7 @@
  * Plugin Name: Easy Digital Downloads - Retroactive Licensing
  * Plugin URI: http://aihr.us/easy-digital-downloads-retroactive-licensing/
  * Description: Send out license keys and activation reminders to users who bought products through Easy Digital Downloads before software licensing was enabled.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Michael Cannon
  * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
  * License: GPLv2 or later
@@ -34,7 +34,7 @@ class EDD_Retroactive_Licensing {
 	const REQUIRED_EDD_VERSION   = '1.8.2.1';
 	const REQUIRED_EDDSL_VERSION = '2.1';
 	const SLUG                   = 'eddrl_';
-	const VERSION                = '1.1.1';
+	const VERSION                = '1.1.2';
 
 	private static $base;
 	private static $post_types;
