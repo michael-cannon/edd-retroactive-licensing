@@ -9,12 +9,12 @@ Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
+Send out license keys and activation reminders to users who bought products through Easy Digital Downloads before software licensing was enabled.
 
 
 == Description ==
 
-Send out license keys to users who bought products through Easy Digital Downloads before software licensing was enabled.
+Send out license keys and activation reminders to users who bought products through Easy Digital Downloads before software licensing was enabled.
 
 = Primary Features =
 
@@ -23,6 +23,7 @@ Send out license keys to users who bought products through Easy Digital Download
 * Automatically selects unlicensed products needing licenses
 * Ensures required software is installed and active before running
 * License provisioning email and configuration options
+* License activation reminder email and configuration options
 * Optional retroactive license processing or not
 * Sends email to product buyer and admin after license generation
 * Select which products to process retroactive licensing for
@@ -38,6 +39,10 @@ Send out license keys to users who bought products through Easy Digital Download
 
 * Enabled? - Check this to enable licensing provision.
 
+**License Reminders**
+
+* Enabled? - Check this to enable sending reminders to activate licenses.
+
 **Emails**
 
 * Disable Licensing Notifications - Check this box if you do not want to receive emails when sales recovery attempts are made.
@@ -47,6 +52,12 @@ Send out license keys to users who bought products through Easy Digital Download
 * Licensing Subject
 * Licensing Content
 * Licensing Notification Subject
+
+**License Reminders**
+
+* Reminder Subject
+* Reminder Content
+* Reminder Notification Subject
 
 = API =
 
