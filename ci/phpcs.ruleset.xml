@@ -4,6 +4,8 @@
 		Custom phpcs rules to check for Aihrus' WordPress projects
 	</description>
 
+	<exclude-pattern>jquery-ui-1.10.3.custom.css</exclude-pattern>
+	<exclude-pattern>jquery-ui-1.10.3.custom.min.css</exclude-pattern>
 	<exclude-pattern>lib/EDD_License_Handler.php</exclude-pattern>
 	<exclude-pattern>lib/EDD_SL_Plugin_Updater.php</exclude-pattern>
 	<exclude-pattern>lib/screen-meta-links.php</exclude-pattern>

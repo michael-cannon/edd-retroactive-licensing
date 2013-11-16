@@ -23,8 +23,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
-
 class EDD_Retroactive_Licensing {
 	const EDD_PT                 = 'download';
 	const EDD_LICENSE_PT         = 'edd_license';
@@ -761,7 +759,7 @@ EOD;
 					'value'   => $payment_id,
 				),
 			),
-			'post_type' 	 => 'edd_license',
+			'post_type'   => 'edd_license',
 		);
 
 		$licenses = get_posts( $args );
@@ -928,32 +926,32 @@ EOD;
 
 
 	public static function email_body_template( $mode = false ) {
-		switch( $mode ) {
+		switch ( $mode ) {
 		case 'reminder' :
-		$template = __(
-			'Hello {name},
+			$template = __(
+				'Hello {name},
 
 We\'re sending you a reminder to activatee your software license for a {date} purchased item from {sitename} that requires licensing for automatic upgrades.
 
 ',
-			'edd-retroactive-licensing'
-		);
-		break;
+				'edd-retroactive-licensing'
+			);
+			break;
 
 		default:
-		$template = __(
-			'Hello {name},
+			$template = __(
+				'Hello {name},
 
 We\'re sending you a software license for a {date} purchased item from {sitename} that now requires licensing for automatic upgrades.
 
-', 
-			'edd-retroactive-licensing'
-		);
-		break;
-	}
+',
+				'edd-retroactive-licensing'
+			);
+			break;
+		}
 
 		$template .= __(
-'We apologize for the inconvenience of having to set the license, but this few minute task will continue to ensure that your purchased software is the latest release with bug fixes and new enhancements.
+			'We apologize for the inconvenience of having to set the license, but this few minute task will continue to ensure that your purchased software is the latest release with bug fixes and new enhancements.
 
 In general, to set the license, copy and paste your product\'s license from below into the appropriate license key field at WP Admin > Downloads > Settings, License tab.
 
@@ -964,13 +962,13 @@ In general, to set the license, copy and paste your product\'s license from belo
 <strong>Item Links</strong>
 
 {file_urls}
-		
+
 ',
 			'edd-retroactive-licensing'
 		);
 
 		$template .= __(
-'If you have any questions, please visit {contact} to send them.
+			'If you have any questions, please visit {contact} to send them.
 <hr />
 <a href="{site_url}">{sitename}</a> appreciates your business.',
 			'edd-retroactive-licensing'
