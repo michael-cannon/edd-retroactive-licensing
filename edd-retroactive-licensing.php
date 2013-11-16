@@ -23,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+
 class EDD_Retroactive_Licensing {
 	const EDD_PT                 = 'download';
 	const EDD_LICENSE_PT         = 'edd_license';
@@ -163,7 +165,10 @@ class EDD_Retroactive_Licensing {
 				$posts = explode( ',', trim( $_REQUEST['posts'], ',' ) );
 				$posts = array_map( 'intval', $posts );
 			} else {
-				$posts = self::get_posts_to_process();
+				$unlicensed = self::get_unlicensed_payments();
+				$inactive   = self::get_inactive_licenses();
+
+				$posts = array_merge( $unlicensed, $inactive );
 			}
 
 			$count = count( $posts );
@@ -176,7 +181,7 @@ class EDD_Retroactive_Licensing {
 				return;
 			}
 
-			$posts = implode( ',', $posts );
+			$posts = "'" . implode( "','", $posts ) . "'";
 			$this->show_status( $count, $posts );
 		} else {
 			// No button click? Display the form.
@@ -188,41 +193,79 @@ class EDD_Retroactive_Licensing {
 	}
 
 
-	public static function get_posts_to_process() {
+	public static function get_inactive_licenses() {
 		global $wpdb;
 
-		$enable_licensing = self::get_edd_options( 'initial_enable' );
+		$enable_licensing = self::get_edd_options( 'remind_enable' );
 		if ( ! $enable_licensing )
-			return;
-
-		$post__in     = array();
-		$post__not_in = array();
+			return array();
 
 		$products = self::get_edd_options( 'allowed_products' );
 		if ( empty( $products ) )
-			return;
+			return array();
 
 		$products     = array_keys( $products );
 		$products_csv = implode( ',', $products );
 
-		// licensed payments of those products
+		$inactive_query = <<<EOD
+			SELECT pm.meta_value
+			FROM {$wpdb->postmeta} pm
+			WHERE 1 = 1
+				AND pm.meta_key = '_edd_sl_payment_id'
+				AND pm.post_id IN (
+					SELECT post_id
+					FROM {$wpdb->postmeta}
+					WHERE 1 = 1
+						AND meta_key = '_edd_sl_status'
+						AND meta_value LIKE 'inactive'
+				)
+				AND pm.post_id IN (
+					SELECT post_id
+					FROM {$wpdb->postmeta}
+					WHERE 1 = 1
+						AND meta_key = '_edd_sl_download_id'
+						AND meta_value IN ( {$products_csv} )
+				)
+EOD;
+
+		$inactives = $wpdb->get_col( $inactive_query );
+		$inactives = apply_filters( 'eddrl_payments', $inactives );
+
+		return $inactives;
+	}
+
+
+	public static function get_unlicensed_payments() {
+		global $wpdb;
+
+		$enable_licensing = self::get_edd_options( 'initial_enable' );
+		if ( ! $enable_licensing )
+			return array();
+
+		$products = self::get_edd_options( 'allowed_products' );
+		if ( empty( $products ) )
+			return array();
+
+		$products     = array_keys( $products );
+		$products_csv = implode( ',', $products );
+
 		$license_query = <<<EOD
 			SELECT pm.meta_value
 			FROM {$wpdb->postmeta} pm
 			WHERE 1 = 1
 				AND pm.meta_key = '_edd_sl_payment_id'
-				AND pm.meta_id NOT IN (
-					SELECT meta_id
+				AND pm.post_id NOT IN (
+					SELECT post_id
 					FROM {$wpdb->postmeta}
 					WHERE 1 = 1
 						AND meta_key = '_edd_sl_download_id'
-						AND meta_value IN ( $products_csv )
+						AND meta_value IN ( {$products_csv} )
 				)
 EOD;
 
-		$licenses     = $wpdb->get_col( $license_query );
-		$post__not_in = array_merge( $post__not_in, $licenses );
+		$post__not_in = $wpdb->get_col( $license_query );
 
+		$post__in = array();
 		foreach ( $products as $product ) {
 			$args  = array(
 				'download' => $product,
@@ -241,6 +284,7 @@ EOD;
 			'post_type' => self::$post_types,
 			'orderby' => 'post_modified',
 			'order' => 'DESC',
+			'posts_per_page' => 1,
 		);
 
 		if ( ! empty( $post__in ) && ! empty( $post__not_in ) ) {
@@ -329,7 +373,7 @@ EOD;
 	// <![CDATA[
 		jQuery(document).ready(function($){
 			var i;
-			var rt_posts = [<?php echo esc_attr( $posts ); ?>];
+			var rt_posts = [<?php echo $posts; ?>];
 			var rt_total = rt_posts.length;
 			var rt_count = 1;
 			var rt_percent = 0;
@@ -454,7 +498,9 @@ EOD;
 
 		$success = self::handle_licensing( $payment_id, $post );
 		if ( true === $success )
-			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully licensed.', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id ) ) ) );
+			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was successfully sent a license.', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id ) ) ) );
+		elseif ( 'reminded' === $success )
+			die( json_encode( array( 'success' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was reminded to set their license.', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id ) ) ) );
 		else
 			die( json_encode( array( 'error' => sprintf( __( '&quot;<a href="%1$s" target="_blank">%2$s</a>&quot; Payment ID %3$s was NOT licensed because "%4$".', 'edd-retroactive-licensing' ), self::get_order_url( $payment_id ), esc_html( get_the_title( $payment_id ) ), $payment_id, $success ) ) ) );
 	}
@@ -679,15 +725,53 @@ EOD;
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
 	public static function handle_licensing( $payment_id, $post ) {
-		$stage = 'initial';
+		$emailed = false;
+		$stage   = self::check_stage( $payment_id );
 
-		$licensed = self::generate_license_keys( $payment_id );
-		if ( true !== $licensed )
-			return $licensed;
 
-		$emailed = self::send_email( $payment_id, $stage );
+		switch ( $stage ) {
+		case 'initial':
+			$licensed = self::generate_license_keys( $payment_id );
+			if ( true !== $licensed )
+				return $licensed;
+
+			$emailed = self::send_email( $payment_id, $stage );
+			break;
+
+		case 'remind':
+			$emailed = self::send_email( $payment_id, $stage );
+			if ( true === $emailed )
+				$emailed = 'reminded';
+			break;
+
+		default:
+			break;
+		}
 
 		return $emailed;
+	}
+
+
+	public static function check_stage( $payment_id ) {
+		$args = array(
+			'posts_per_page' => 1,
+			'meta_query'     => array(
+				array(
+					'key'    => '_edd_sl_payment_id',
+					'value'   => $payment_id,
+				),
+			),
+			'post_type' 	 => 'edd_license',
+		);
+
+		$licenses = get_posts( $args );
+
+		if ( empty( $licenses ) )
+			$stage = 'initial';
+		else
+			$stage = 'remind';
+
+		return $stage;
 	}
 
 
@@ -732,6 +816,19 @@ EOD;
 			'id' => self::SLUG . 'initial_enable',
 			'name' => esc_html__( 'Enabled?', 'edd-retroactive-licensing' ),
 			'desc' => esc_html__( 'Check this to enable licensing provision.', 'edd-retroactive-licensing' ),
+			'type' => 'checkbox',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'remind_header',
+			'name' => '<strong>' . esc_html__( 'License Reminders', 'edd-retroactive-licensing' ) . '</strong>',
+			'type' => 'header',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'remind_enable',
+			'name' => esc_html__( 'Enabled?', 'edd-retroactive-licensing' ),
+			'desc' => esc_html__( 'Check this to enable sending reminders to activate licenses.', 'edd-retroactive-licensing' ),
 			'type' => 'checkbox',
 		);
 
@@ -781,6 +878,34 @@ EOD;
 			'std' => esc_html__( '{sitename}: Product Licensing', 'edd-retroactive-licensing' ),
 		);
 
+		$settings[] = array(
+			'id' => self::SLUG . 'remind_header',
+			'name' => '<strong>' . esc_html__( 'License Reminders', 'edd-retroactive-licensing' ) . '</strong>',
+			'type' => 'header',
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'remind_subject',
+			'name' => esc_html__( 'Reminder Subject', 'edd-retroactive-licensing' ),
+			'type' => 'text',
+			'std' => esc_html__( '{sitename}: Activate Your License', 'edd-retroactive-licensing' ),
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'remind_email',
+			'name' => esc_html__( 'Reminder Content', 'edd-retroactive-licensing' ),
+			'desc' => self::template_tags(),
+			'type' => 'rich_editor',
+			'std' => self::email_body_template( 'reminder' ),
+		);
+
+		$settings[] = array(
+			'id' => self::SLUG . 'remind_admin_subject',
+			'name' => esc_html__( 'Reminder Notification Subject', 'edd-retroactive-licensing' ),
+			'type' => 'text',
+			'std' => esc_html__( '{sitename}: Activate Your License', 'edd-retroactive-licensing' ),
+		);
+
 		return $settings;
 	}
 
@@ -802,19 +927,50 @@ EOD;
 	}
 
 
-	public static function email_body_template() {
+	public static function email_body_template( $mode = false ) {
+		switch( $mode ) {
+		case 'reminder' :
 		$template = __(
 			'Hello {name},
 
-We\'re sending you a software license for a {date} purchased item from {sitename} that now requires licensing for use and upgrades.
+We\'re sending you a reminder to activatee your software license for a {date} purchased item from {sitename} that requires licensing for automatic upgrades.
 
-We apologize for the inconvenience of having to set the license, but this few minute task will continue to ensure that your purchased sofware is the latest release with bug fixes and new enhancements.
+',
+			'edd-retroactive-licensing'
+		);
+		break;
+
+		default:
+		$template = __(
+			'Hello {name},
+
+We\'re sending you a software license for a {date} purchased item from {sitename} that now requires licensing for automatic upgrades.
+
+', 
+			'edd-retroactive-licensing'
+		);
+		break;
+	}
+
+		$template .= __(
+'We apologize for the inconvenience of having to set the license, but this few minute task will continue to ensure that your purchased software is the latest release with bug fixes and new enhancements.
 
 In general, to set the license, copy and paste your product\'s license from below into the appropriate license key field at WP Admin > Downloads > Settings, License tab.
 
+<strong>Licenses</strong>
+
 {license_keys}
 
-If you have any questions, please visit {contact} to send them.
+<strong>Item Links</strong>
+
+{file_urls}
+		
+',
+			'edd-retroactive-licensing'
+		);
+
+		$template .= __(
+'If you have any questions, please visit {contact} to send them.
 <hr />
 <a href="{site_url}">{sitename}</a> appreciates your business.',
 			'edd-retroactive-licensing'
