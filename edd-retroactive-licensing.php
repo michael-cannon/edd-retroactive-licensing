@@ -931,7 +931,7 @@ EOD;
 			$template = __(
 				'Hello {name},
 
-We\'re sending you a reminder to activatee your software license for a {date} purchased item from {sitename} that requires licensing for automatic upgrades.
+We\'re sending you a reminder to activate your software license for a {date} purchased item from {sitename} that requires licensing for automatic upgrades.
 
 ',
 				'edd-retroactive-licensing'
