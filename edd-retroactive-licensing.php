@@ -315,7 +315,7 @@ EOD;
 
 	<p><?php _e( 'Use this tool to provision licenses for unlicensed Easy Digital Downloads products.', 'edd-retroactive-licensing' ); ?></p>
 
-	<p><?php _e( 'This processing is not reversible. Backup your database beforehand or be prepared to revert each transformmed post manually.', 'edd-retroactive-licensing' ); ?></p>
+	<p><?php _e( 'This processing is not reversible. Backup your database beforehand or be prepared to revert each transformed post manually.', 'edd-retroactive-licensing' ); ?></p>
 
 	<p><?php printf( esc_html__( 'Please review your %s before proceeding.', 'edd-retroactive-licensing' ), self::$settings_link ); ?></p>
 
