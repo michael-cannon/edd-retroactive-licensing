@@ -59,42 +59,66 @@ Send out license keys and activation reminders to users who bought products thro
 * Reminder Content
 * Reminder Notification Subject
 
-= API =
-
-* Read the [EDD Retroactive Licensing API](http://aihr.us/easy-digital-downloads-retroactive-licensing/api/).
-
-= Languages =
-
-You can translate this plugin into your own language if it's not done so already. The localization file `edd-retroactive-licensing.pot` can be found in the `languages` folder of this plugin. After translation, please [send the localized file](http://aihr.us/contact-aihrus/) to the plugin author.
-
-See the FAQ for further localization tips.
-
-= Support =
-
-Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zendesk.com/categories/20133716-Easy-Digital-Downloads-Retroactive-Licensing) for frequently asked questions, offering ideas, or getting support.
-
 
 == Installation ==
 
-1. Via WordPress Admin > Plugins > Add New, Upload the `edd-retroactive-licensing.zip` file
-1. Alternately, unzip `edd-retroactive-licensing.zip` the file and then via FTP, upload `edd-retroactive-licensing` directory to the `/wp-content/plugins/` directory
-1. Activate the 'EDD Retroactive Licensing' plugin after uploading or through WP Admin > Plugins
-1. Set the license key via WP Admin > Downloads > Settings, Licenses tab
+= Install Methods =
+
+* Download `edd-retroactive-licensing.zip` locally
+	* Through WordPress Admin > Plugins > Add New
+	* Click Upload
+	* "Choose File" `edd-retroactive-licensing.zip`
+	* Click "Install Now"
+* Download and unzip `edd-retroactive-licensing.zip` locally
+	* Using FTP, upload directory `edd-retroactive-licensing` to your website's `/wp-content/plugins/` directory
+
+= Activatation Options =
+
+**Plugin "[Easy Digital Downloads](http://wordpress.org/plugins/easy-digital-downloads/)" is required to be installed and activated prior to activating "Easy Digital Downloads - Retroactive Licensing".**
+
+* Activate the "Easy Digital Downloads - Retroactive Licensing" plugin after uploading
+* Activate the "Easy Digital Downloads - Retroactive Licensing" plugin through WordPress Admin > Plugins
+
+= License Activatation =
+
+1. Set the license key through WordPress Admin > Products > Settings > Licenses tab, EDD - Retroactive Licensing License Key field
+1. License key activation is automatic upon clicking "Save Changes"
 
 = Usage =
 
-1. Visit WordPress Admin > Downloads > Settings
-1. Configure and save Emails' tab settings
-1. Configure and save Extensons' tab settings
+1. Visit WordPress Admin > Products > Settings
+1. Configure and save via Emails' tab settings
+1. Configure and save via Extensons' tab settings
 1. Make sure to check allowed products and enable license provisioning
-1. Visit WordPress Admin > Downloads > Retroactive Licensing
-1. Click button 'Perform EDD Retroactive Licensing'
+1. Visit WordPress Admin > Products > Retroactive Licensing
+1. Click button "Perform EDD Retroactive Licensing"
 1. Viola, all done!
+
+= Upgrading =
+
+* Through WordPress
+	* Via WordPress Admin > Dashboard > Updates, click "Check Again"
+	* Select plugins for update, click "Update Plugins"
+* Using FTP
+	* Download and unzip `edd-retroactive-licensing.zip` locally
+	* FTP, upload directory `edd-retroactive-licensing` to your website's `/wp-content/plugins/` directory
+	* Be sure to overwrite your existing `edd-retroactive-licensing` folder contents
 
 
 == Frequently Asked Questions ==
 
-Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zendesk.com/categories/20133716-Easy-Digital-Downloads-Retroactive-Licensing) for frequently asked questions, offering ideas, or getting support.
+= Most Common Issues =
+
+* Got `Parse error: syntax error, unexpected T_STATIC, expecting ')'`? Read [Most Aihrus Plugins Require PHP 5.3+](https://aihrus.zendesk.com/entries/30678006) for the fixes.
+* [Debug common theme and plugin conflicts](https://aihrus.zendesk.com/entries/25119302)
+
+= Still Stuck or Want Something Done? Get Support! =
+
+1. [Easy Digital Downloads - Retroactive Licensing Knowledge Base](https://aihrus.zendesk.com/categories/20133716) - read and comment upon frequently asked questions
+1. [Open Easy Digital Downloads - Retroactive Licensing Issues](https://github.com/michael-cannon/edd-retroactive-licensing/issues) - review and submit bug reports and enhancement requests
+1. [Easy Digital Downloads - Retroactive Licensing Support Forum](TBD) - review responses and ask questions
+1. [Contribute Code to Easy Digital Downloads - Retroactive Licensing](https://github.com/michael-cannon/edd-retroactive-licensing/blob/master/CONTRIBUTING.md) - [request access](http://aihr.us/contact-aihrus/)
+1. [Beta Testers Needed](http://aihr.us/become-beta-tester/) - get the latest Easy Digital Downloads - Retroactive Licensing version
 
 
 == Screenshots ==
@@ -107,6 +131,8 @@ Please visit the [EDD Retroactive Licensing Knowledge Base](https://aihrus.zende
 6. License entry - Retroactive Licensing for Easy Digital Downloads
 7. Plugin entry - Retroactive Licensing for Easy Digital Downloads
 
+[gallery]
+
 
 == Changelog ==
 
@@ -115,21 +141,23 @@ See [Changelog](http://aihr.us/easy-digital-downloads-retroactive-licensing/chan
 
 == Upgrade Notice ==
 
-= 0.0.1 =
+= 1.0.0 =
 
 * Initial release
 
 
-== Beta Testers Needed ==
+== Notes ==
 
-I really want EDD Retroactive Licensing and EDD Retroactive Licensing Premium to be the best WordPress plugins of their type. However, it's beyond me to do it alone.
+TBD
 
-I need beta testers to help with ensuring pending releases of EDD Retroactive Licensing and EDD Retroactive Licensing Premium are solid. This would benefit us all by helping reduce the number of releases and raise code quality.
 
-[Please contact me directly](http://aihr.us/contact-aihrus/).
+== API ==
 
-Beta testers benefit directly with latest versions, a free 1-site license for EDD Retroactive Licensing Premium, and personalized support assistance.
+* Read the [EDD Retroactive Licensing API](http://aihr.us/easy-digital-downloads-retroactive-licensing/api/).
 
-== TODO ==
 
-See [TODO](http://aihr.us/easy-digital-downloads-retroactive-licensing/todo/)
+== Localization ==
+
+You can translate this plugin into your own language if it's not done so already. The localization file `edd-retroactive-licensing.pot` can be found in the `languages` folder of this plugin. After translation, please [send the localized file](http://aihr.us/contact-aihrus/) for plugin inclusion.
+
+**[How do I localize?](https://aihrus.zendesk.com/entries/23691557)**
