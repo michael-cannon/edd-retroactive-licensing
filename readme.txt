@@ -86,6 +86,7 @@ Send out license keys and activation reminders to users who bought products thro
 
 = Usage =
 
+1. Read [Setup Retroactive Licensing for Easy Digital Downloads](https://aihr.us/easy-digital-downloads-retroactive-licensing/setup/)
 1. Visit WordPress Admin > Products > Settings
 1. Configure and save via Emails' tab settings
 1. Configure and save via Extensons' tab settings
@@ -109,6 +110,7 @@ Send out license keys and activation reminders to users who bought products thro
 
 = Most Common Issues =
 
+* [Setup Retroactive Licensing for Easy Digital Downloads](https://aihr.us/easy-digital-downloads-retroactive-licensing/setup/)
 * Got `Parse error: syntax error, unexpected T_STATIC, expecting ')'`? Read [Most Aihrus Plugins Require PHP 5.3+](https://aihrus.zendesk.com/entries/30678006) for the fixes.
 * [Debug common theme and plugin conflicts](https://aihrus.zendesk.com/entries/25119302)
 
