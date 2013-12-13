@@ -42,6 +42,7 @@ class EDD_Retroactive_Licensing {
 	public static $menu_id;
 	public static $notice_key;
 	public static $payment_history_url;
+	public static $post_id;
 	public static $settings_link;
 	public static $settings_link_email;
 
@@ -56,7 +57,7 @@ class EDD_Retroactive_Licensing {
 	}
 
 
-	public function admin_init() {
+	public static function admin_init() {
 		if ( ! self::version_check() )
 			return;
 
@@ -67,7 +68,7 @@ class EDD_Retroactive_Licensing {
 	}
 
 
-	public function admin_menu() {
+	public static function admin_menu() {
 		self::$menu_id = add_submenu_page( 'edit.php?post_type=' . self::EDD_PT, esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( $this, 'user_interface' ) );
 
 		add_action( 'admin_print_scripts-' . self::$menu_id, array( $this, 'scripts' ) );
@@ -75,7 +76,7 @@ class EDD_Retroactive_Licensing {
 	}
 
 
-	public function init() {
+	public static function init() {
 		add_action( 'wp_ajax_ajax_process_post', array( $this, 'ajax_process_post' ) );
 		add_filter( 'edd_email_template_tags', array( $this, 'edd_email_template_tags' ), 10, 4 );
 		add_filter( 'edd_settings_emails', array( $this, 'edd_settings_emails' ), 10, 1 );
@@ -87,7 +88,7 @@ class EDD_Retroactive_Licensing {
 	}
 
 
-	public function plugin_action_links( $links, $file ) {
+	public static function plugin_action_links( $links, $file ) {
 		if ( $file == self::$base ) {
 			array_unshift( $links, self::$settings_link_email );
 			array_unshift( $links, self::$settings_link );
@@ -138,10 +139,10 @@ class EDD_Retroactive_Licensing {
 	 * @SuppressWarnings(PHPMD.ExitExpression)
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
-	public function user_interface() {
+	public static function user_interface() {
 		// Capability check
 		if ( ! current_user_can( 'manage_options' ) )
-			wp_die( $this->post_id, esc_html__( 'Your user account doesn\'t have permission to access this.', 'edd-retroactive-licensing' ) );
+			wp_die( self::$post_id, esc_html__( 'Your user account doesn\'t have permission to access this.', 'edd-retroactive-licensing' ) );
 
 ?>
 
@@ -180,10 +181,10 @@ class EDD_Retroactive_Licensing {
 			}
 
 			$posts = "'" . implode( "','", $posts ) . "'";
-			$this->show_status( $count, $posts );
+			self::show_status( $count, $posts );
 		} else {
 			// No button click? Display the form.
-			$this->show_greeting();
+			self::show_greeting();
 		}
 ?>
 	</div>
@@ -308,7 +309,7 @@ EOD;
 	}
 
 
-	public function show_greeting() {
+	public static function show_greeting() {
 ?>
 	<form method="post" action="">
 <?php wp_nonce_field( self::ID ); ?>
@@ -335,7 +336,7 @@ EOD;
 	 *
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
-	public function show_status( $count, $posts ) {
+	public static function show_status( $count, $posts ) {
 		echo '<p>' . esc_html__( 'Please be patient while this script run. This can take a while, up to a minute per post. Do not navigate away from this page until this script is done or the licensing will not be completed. You will be notified via this page when the licensing is completed.', 'edd-retroactive-licensing' ) . '</p>';
 
 		echo '<p>' . sprintf( esc_html__( 'Estimated time required to send licenses is %1$s minutes.', 'edd-retroactive-licensing' ), number_format( $count * .33 ) ) . '</p>';
@@ -484,7 +485,7 @@ EOD;
 	 * @SuppressWarnings(PHPMD.ExitExpression)
 	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
-	public function ajax_process_post() {
+	public static function ajax_process_post() {
 		error_reporting( 0 ); // Don't break the JSON result
 		header( 'Content-type: application/json' );
 
@@ -544,7 +545,7 @@ EOD;
 	}
 
 
-	public function notice_version() {
+	public static function notice_version() {
 		$edd_slug  = 'easy-digital-downloads';
 		$is_active = is_plugin_active( self::EDD_PLUGIN_FILE );
 
@@ -636,7 +637,7 @@ EOD;
 	}
 
 
-	public function notice_eddsl() {
+	public static function notice_eddsl() {
 		$eddsl_slug = 'edd-software-licensing';
 
 		$plugins = get_plugins();
@@ -773,7 +774,7 @@ EOD;
 	}
 
 
-	public function edd_settings_extensions( $settings ) {
+	public static function edd_settings_extensions( $settings ) {
 		$settings[] = array(
 			'id' => self::SLUG . 'header',
 			'name' => '<h3 id="EDD_Retroactive_Licensing">' . esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ) . '</h3>',
@@ -834,7 +835,7 @@ EOD;
 	}
 
 
-	public function edd_settings_emails( $settings ) {
+	public static function edd_settings_emails( $settings ) {
 		$settings[] = array(
 			'id' => self::SLUG . 'header',
 			'name' => '<h3 id="EDD_Retroactive_Licensing">' . esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ) . '</h3>',
@@ -908,7 +909,7 @@ EOD;
 	}
 
 
-	public function template_tags() {
+	public static function template_tags() {
 		$tags   = array();
 		$tags[] = esc_html__( 'Enter the email contents that is sent for retroactive licensing. HTML is accepted. Additional EDD template tags:', 'edd-retroactive-licensing' );
 		$tags[] = '{admin_order_details_url} - ' . esc_html__( 'Admin order details URL', 'edd-retroactive-licensing' );
