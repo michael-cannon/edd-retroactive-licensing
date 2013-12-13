@@ -62,6 +62,10 @@ Send out license keys and activation reminders to users who bought products thro
 
 == Installation ==
 
+= Requirements =
+
+* Plugin "[Easy Digital Downloads](http://wordpress.org/plugins/easy-digital-downloads/)" is required to be installed and activated prior to activating "Easy Digital Downloads - Retroactive Licensing".
+
 = Install Methods =
 
 * Download `edd-retroactive-licensing.zip` locally
@@ -72,9 +76,7 @@ Send out license keys and activation reminders to users who bought products thro
 * Download and unzip `edd-retroactive-licensing.zip` locally
 	* Using FTP, upload directory `edd-retroactive-licensing` to your website's `/wp-content/plugins/` directory
 
-= Activatation Options =
-
-**Plugin "[Easy Digital Downloads](http://wordpress.org/plugins/easy-digital-downloads/)" is required to be installed and activated prior to activating "Easy Digital Downloads - Retroactive Licensing".**
+= Activation Options =
 
 * Activate the "Easy Digital Downloads - Retroactive Licensing" plugin after uploading
 * Activate the "Easy Digital Downloads - Retroactive Licensing" plugin through WordPress Admin > Plugins
