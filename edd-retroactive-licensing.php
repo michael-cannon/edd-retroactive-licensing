@@ -31,7 +31,7 @@ class EDD_Retroactive_Licensing {
 	const EDDSL_PLUGIN_FILE      = 'edd-software-licensing/edd-software-licenses.php';
 	const ID                     = 'edd-retroactive-licensing';
 	const PLUGIN_FILE            = 'edd-retroactive-licensing/edd-retroactive-licensing.php';
-	const REQUIRED_EDD_VERSION   = '1.8.2.1';
+	const REQUIRED_EDD_VERSION   = '1.8.5';
 	const REQUIRED_EDDSL_VERSION = '2.1';
 	const SLUG                   = 'eddrl_';
 	const VERSION                = '1.1.2';
@@ -48,9 +48,9 @@ class EDD_Retroactive_Licensing {
 
 
 	public function __construct() {
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
-		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-		add_action( 'init', array( $this, 'init' ) );
+		add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+		add_action( 'init', array( __CLASS__, 'init' ) );
 
 		self::set_base();
 		self::set_post_types();
@@ -61,7 +61,7 @@ class EDD_Retroactive_Licensing {
 		if ( ! self::version_check() )
 			return;
 
-		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
 
 		self::$settings_link       = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=extensions#EDD_Retroactive_Licensing">' . esc_html__( 'Settings', 'edd-retroactive-licensing' ) . '</a>';
 		self::$settings_link_email = '<a href="' . get_admin_url() . 'edit.php?post_type=' . self::EDD_PT . '&page=edd-settings&tab=emails#EDD_Retroactive_Licensing">' . esc_html__( 'Emails', 'edd-retroactive-licensing' ) . '</a>';
@@ -69,18 +69,18 @@ class EDD_Retroactive_Licensing {
 
 
 	public static function admin_menu() {
-		self::$menu_id = add_submenu_page( 'edit.php?post_type=' . self::EDD_PT, esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( $this, 'user_interface' ) );
+		self::$menu_id = add_submenu_page( 'edit.php?post_type=' . self::EDD_PT, esc_html__( 'EDD Retroactive Licensing Processer', 'edd-retroactive-licensing' ), esc_html__( 'Retroactive Licensing', 'edd-retroactive-licensing' ), 'manage_options', self::ID, array( __CLASS__, 'user_interface' ) );
 
-		add_action( 'admin_print_scripts-' . self::$menu_id, array( $this, 'scripts' ) );
-		add_action( 'admin_print_styles-' . self::$menu_id, array( $this, 'styles' ) );
+		add_action( 'admin_print_scripts-' . self::$menu_id, array( __CLASS__, 'scripts' ) );
+		add_action( 'admin_print_styles-' . self::$menu_id, array( __CLASS__, 'styles' ) );
 	}
 
 
 	public static function init() {
-		add_action( 'wp_ajax_ajax_process_post', array( $this, 'ajax_process_post' ) );
-		add_filter( 'edd_email_template_tags', array( $this, 'edd_email_template_tags' ), 10, 4 );
-		add_filter( 'edd_settings_emails', array( $this, 'edd_settings_emails' ), 10, 1 );
-		add_filter( 'edd_settings_extensions', array( $this, 'edd_settings_extensions' ), 10, 1 );
+		add_action( 'wp_ajax_ajax_process_post', array( __CLASS__, 'ajax_process_post' ) );
+		add_filter( 'edd_email_template_tags', array( __CLASS__, 'edd_email_template_tags' ), 10, 4 );
+		add_filter( 'edd_settings_emails', array( __CLASS__, 'edd_settings_emails' ), 10, 1 );
+		add_filter( 'edd_settings_extensions', array( __CLASS__, 'edd_settings_extensions' ), 10, 1 );
 
 		load_plugin_textdomain( self::ID, false, 'edd-retroactive-licensing/languages' );
 

@@ -104,7 +104,7 @@ Send out license keys and activation reminders to users who bought products thro
 	* Select plugins for update, click "Update Plugins"
 * Using FTP
 	* Download and unzip `edd-retroactive-licensing.zip` locally
-	* FTP, upload directory `edd-retroactive-licensing` to your website's `/wp-content/plugins/` directory
+	* Upload directory `edd-retroactive-licensing` to your website's `/wp-content/plugins/` directory
 	* Be sure to overwrite your existing `edd-retroactive-licensing` folder contents
 
 
