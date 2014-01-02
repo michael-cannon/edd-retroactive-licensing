@@ -7,6 +7,8 @@
  * Author: Michael Cannon
  * Author URI: http://aihr.us/about-aihrus/michael-cannon-resume/
  * License: GPLv2 or later
+ * Text Domain: edd-retroactive-licensing
+ * Domain Path: /languages
  */
 
 

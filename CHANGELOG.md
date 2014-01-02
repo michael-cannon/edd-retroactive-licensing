@@ -4,6 +4,7 @@
 * Convert TODO to https://github.com/michael-cannon/edd-retroactive-licensing/issues
 * Convert to static class coding
 * Revise readme structure
+* Specify a “Text Domain” and “Domain Path”
 * Update required EDD version
 * Verbiage correction
 
