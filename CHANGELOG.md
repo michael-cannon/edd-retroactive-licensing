@@ -1,8 +1,9 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
 ## master
-* Convert TODO to https://github.com/michael-cannon/edd-retroactive-licensing/issues
+* Coding standards revisions
 * Convert to static class coding
+* Convert TODO to https://github.com/michael-cannon/edd-retroactive-licensing/issues
 * Revise readme structure
 * Specify a “Text Domain” and “Domain Path”
 * Update required EDD version

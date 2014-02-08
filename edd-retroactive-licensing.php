@@ -140,6 +140,7 @@ class EDD_Retroactive_Licensing {
 	 *
 	 * @SuppressWarnings(PHPMD.ExitExpression)
 	 * @SuppressWarnings(PHPMD.Superglobals)
+	 * @codingStandardsIgnoreStart
 	 */
 	public static function user_interface() {
 		// Capability check
@@ -192,6 +193,7 @@ class EDD_Retroactive_Licensing {
 	</div>
 <?php
 	}
+	// @codingStandardsIgnoreEnd
 
 
 	public static function get_inactive_licenses() {
@@ -311,6 +313,9 @@ EOD;
 	}
 
 
+	/**
+	 * @codingStandardsIgnoreStart
+	 */
 	public static function show_greeting() {
 ?>
 	<form method="post" action="">
@@ -331,12 +336,14 @@ EOD;
 	</form>
 <?php
 	}
+	// @codingStandardsIgnoreEnd
 
 
 	/**
 	 *
 	 *
 	 * @SuppressWarnings(PHPMD.Superglobals)
+	 * @codingStandardsIgnoreStart
 	 */
 	public static function show_status( $count, $posts ) {
 		echo '<p>' . esc_html__( 'Please be patient while this script run. This can take a while, up to a minute per post. Do not navigate away from this page until this script is done or the licensing will not be completed. You will be notified via this page when the licensing is completed.', 'edd-retroactive-licensing' ) . '</p>';
@@ -479,6 +486,7 @@ EOD;
 	</script>
 <?php
 	}
+	// @codingStandardsIgnoreEnd
 
 
 	/**
