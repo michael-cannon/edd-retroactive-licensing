@@ -8,7 +8,9 @@
 * Convert TODO to https://github.com/michael-cannon/edd-retroactive-licensing/issues
 * Revise readme structure
 * Specify a “Text Domain” and “Domain Path”
+* Update file structure
 * Update required EDD version
+* Use Codeship.io than Travis CI
 * Verbiage correction
 
 ## 1.1.2

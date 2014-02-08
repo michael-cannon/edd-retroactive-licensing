@@ -1,6 +1,6 @@
 # EDD Retroactive Licensing plugin for WordPress
 
-[![Build Status](https://travis-ci.org/michael-cannon/edd-retroactive-licensing.png?branch=master)](https://travis-ci.org/michael-cannon/edd-retroactive-licensing)
+[![Codeship status](https://www.codeship.io/projects/TBD/status)](https://www.codeship.io/projects/TBD
 [![ProjectStatus](http://stillmaintained.com/michael-cannon/edd-retroactive-licensing.png)](http://stillmaintained.com/michael-cannon/edd-retroactive-licensing)
 
 ## Welcome to the EDD Retroactive Licensing Github repository
