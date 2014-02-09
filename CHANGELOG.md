@@ -1,5 +1,28 @@
 # CHANGELOG for WordPress EDD Retroactive Licensing plugin
 
+##TODO
+* Create defines
+* Create requirements checking
+* Aihrus Framework version 1.0.3
+* Check for definitions before defining
+* Create _DIR_INC includes/
+* Revise _DIR_LIB libraries/
+* Remove / at beginning of require_once
+* Settings plugin_path to plugin_assets
+* Replace plugins_url with self::$plugin_assets
+* Change `self::notice_updated` to `aihr_notice_updated`
+* Change `self::notice_error` to `aihr_notice_error`
+* Check includes for libraries needing to be moved
+* Check `version_check` - remove BASE check
+* For addons
+	* ?Add CBQE_EF_REQ_BASE_PREM
+	* vimdiff includes/requirements.php ../cbqe-edit-flow/includes/requirements.php
+	* Remove _AIHR_VERSION
+* For premium
+	* pull free into plugin directly as a library
+	* Check tw_activated
+* Move main class to includes
+
 ## master
 
 ## 1.2.0RC1
